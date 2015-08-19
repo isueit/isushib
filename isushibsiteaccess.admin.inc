@@ -53,7 +53,7 @@ function isushibsiteaccess_settings() {
     $rows[] = array(
       'data' => array(
         check_plain($row->name),
-        $u ? t('Current') : t('Future'),
+        $u ? ($u->status ? t('Current') : t('Blocked')) : t('Future'),
         $u ? check_plain(implode(', ', $u->roles)) : $assigned_roles,
         $u ? $edit_user : $operations,
       ),

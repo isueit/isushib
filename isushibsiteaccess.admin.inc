@@ -104,6 +104,10 @@ function isushibsiteaccess_settings() {
  * Validate user list.
  */
 function isushibsiteaccess_settings_validate($form, &$form_state) {
+  isushibsiteaccess_clean_and_validate_user_names($form, $form_state);
+}
+
+function isushibsiteaccess_clean_and_validate_user_names($form, &$form_state) {
   $users = array();
   
   // Change to an array.

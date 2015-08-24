@@ -383,6 +383,9 @@ function isushibsiteaccess_form_revoke_validate($form, &$form_state) {
 
 function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 {
+  $count_blocks = 0;
+  $count_deletes = 0;
+
   foreach ($form_state['values']['clean_users'] as $name) {
     // Is the user on the access list, if not, continue to the next user?
     $fuid = isushibsiteaccess_get_fuid($name);
@@ -403,6 +406,8 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 	  drupal_set_message(t('Blocked existing user %name.', array('%name' => $name)));
 	  watchdog('isushibsiteaccess', 'Blocked current user %name.', array('%name' => $name));
 	  
+	  $count_blocks++;
+
 	} else {
       // Delete any roles from isushibsiteaccess
       db_delete('isushibsiteaccess_roles')
@@ -417,7 +422,17 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 
       drupal_set_message(t('Deleted future user %name.', array('%name' => $name)));
 	  watchdog('isushibsiteaccess', 'Deleted user entry for %name.', array('%name' => $name));
+
+	  $count_deletes++;
     }
+  }
+
+  if ($count_blocks) {
+    drupal_set_message(t('%count current users were blocked.', array('%count' => $count_blocks)));
+  }
+
+  if ($count_deletes) {
+    drupal_set_message(t('%count future users were deleted.', array('%count' => $count_deletes)));
   }
 }
 

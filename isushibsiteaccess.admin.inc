@@ -395,11 +395,28 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 
 	if ($u) {
 	  // User exists
+
+      // Block the user account
+      $u->status = 0;
+	  user_save($u);
+	  
+	  drupal_set_message(t('Blocked existing user %name.', array('%name' => $name)));
+	  watchdog('isushibsiteaccess', 'Blocked current user %name.', array('%name' => $name));
+	  
 	} else {
+      // Delete any roles from isushibsiteaccess
+      db_delete('isushibsiteaccess_roles')
+        ->condition('fuid', $fuid)
+        ->execute();
+	  watchdog('isushibsiteaccess', 'deleted roles for %name', array('%name' => $name));
+
       // User doesn't exist
       db_delete('isushibsiteaccess_users')
         ->condition('fuid', $fuid)
         ->execute();
+
+      drupal_set_message(t('Deleted future user %name.', array('%name' => $name)));
+	  watchdog('isushibsiteaccess', 'Deleted user entry for %name.', array('%name' => $name));
     }
   }
 }

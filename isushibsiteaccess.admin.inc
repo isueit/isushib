@@ -377,3 +377,7 @@ function isushibsiteaccess_form_revoke() {
   return $form;
 
 }
+function isushibsiteaccess_form_revoke_validate($form, &$form_state) {
+  isushibsiteaccess_clean_and_validate_user_names($form, $form_state);
+}
+

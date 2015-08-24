@@ -349,3 +349,9 @@ function isushibsiteaccess_user_delete_confirm_submit($form, &$form_state) {
   drupal_set_message(t('Future user %name has been deleted.', array('%name' => $name)));
   $form_state['redirect'] = 'admin/config/people/isushibsiteaccess';
 }
+
+/**
+ * Form definition for bulk revoke of user access to the site.
+ */
+function isushibsiteaccess_form_revoke() {
+}

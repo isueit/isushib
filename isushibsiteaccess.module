@@ -31,6 +31,16 @@ function isushibsiteaccess_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 10,
   );
+  $items['admin/config/people/isushibsiteaccess/revoke'] = array(
+    'title' => 'Delete Users',
+    'description' => 'Bulk revoke access to the site',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('isushibsiteaccess_form_revoke'),
+    'access arguments' => array('revoke shibboleth site access'),
+    'file' => 'isushibsiteaccess.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
+  );
   $items['admin/config/people/isushibsiteaccess/edit'] = array(
     'title' => 'Edit future user roles',
     'description' => 'Change roles that will be assigned to a given future user',

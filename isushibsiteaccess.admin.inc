@@ -381,3 +381,8 @@ function isushibsiteaccess_form_revoke_validate($form, &$form_state) {
   isushibsiteaccess_clean_and_validate_user_names($form, $form_state);
 }
 
+function isushibsiteaccess_form_revoke_submit($form, &$form_state)
+{
+	drupal_set_message(t('I am here!'));
+}
+

@@ -390,6 +390,14 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
       form_set_error('isushibsiteaccess_nonexistant_user', t('User %name is not on the access list', array('%name' => $name)));
       continue;
     }
+    
+	$u = user_load_by_name($name);
+
+	if ($u) {
+	  // User exists
+	} else {
+      // User doesn't exist
+    }
   }
 }
 

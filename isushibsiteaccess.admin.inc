@@ -383,6 +383,13 @@ function isushibsiteaccess_form_revoke_validate($form, &$form_state) {
 
 function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 {
-	drupal_set_message(t('I am here!'));
+  foreach ($form_state['values']['clean_users'] as $name) {
+    // Is the user on the access list, if not, continue to the next user?
+    $fuid = isushibsiteaccess_get_fuid($name);
+    if (!$fuid) {
+      form_set_error('isushibsiteaccess_nonexistant_user', t('User %name is not on the access list', array('%name' => $name)));
+      continue;
+    }
+  }
 }
 

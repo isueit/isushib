@@ -397,6 +397,9 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 	  // User exists
 	} else {
       // User doesn't exist
+      db_delete('isushibsiteaccess_users')
+        ->condition('fuid', $fuid)
+        ->execute();
     }
   }
 }

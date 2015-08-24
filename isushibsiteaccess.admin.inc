@@ -354,4 +354,22 @@ function isushibsiteaccess_user_delete_confirm_submit($form, &$form_state) {
  * Form definition for bulk revoke of user access to the site.
  */
 function isushibsiteaccess_form_revoke() {
+  $form['revoke'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Revoke Users'),
+  );
+  $form['revoke']['isushibsiteaccess_usernames'] = array(
+    '#type' => 'textarea',
+    '#rows' => 2,
+    '#title' => t('Username(s) of user(s) to revoke'),
+    '#description' => t('Enter the username of a person who should no longer have access to the site. You may also provide multiple usernames delimited by commas (e.g., john, michael, ryan) or on multiple lines.')
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+
+  return $form;
+
 }

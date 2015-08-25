@@ -385,12 +385,16 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 {
   $count_blocks = 0;
   $count_deletes = 0;
+  $error_message = '';
 
   foreach ($form_state['values']['clean_users'] as $name) {
     // Is the user on the access list, if not, continue to the next user?
     $fuid = isushibsiteaccess_get_fuid($name);
     if (!$fuid) {
-      form_set_error('isushibsiteaccess_nonexistant_user', t('User %name is not on the access list', array('%name' => $name)));
+      if ($error_message != '') {
+        $error_message = $error_message . '<br />';
+      }
+      $error_message = $error_message . t('User %name is not on the access list', array('%name' => $name));
       continue;
     }
     
@@ -425,6 +429,10 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
 
 	  $count_deletes++;
     }
+  }
+
+  if ($error_message != '') {
+    form_set_error('isushibsiteaccess_nonexistant_user', $error_message);
   }
 
   if ($count_blocks) {

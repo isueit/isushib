@@ -22,3 +22,16 @@ function isushibsiteaccesssync_install() {
   }
 }
 
+
+/**
+ * Implements hook_schema_alter().
+ */
+function isushibsiteaccesssync_schema_alter(&$schema) {
+  $schema['isushibsiteaccess_users']['fields']['status'] = array(
+    'description' => 'Status of username, can be AD, notAD, delete, new',
+    'type' => 'varchar',
+    'length' => '60',
+    'not null' => TRUE,
+    'default' => 'notAD',
+  );
+}

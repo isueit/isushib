@@ -9,7 +9,7 @@
 /**
  * Implements hook_cron().
  */
-function isushibsiteaccess_cron() {
+function isushibsiteaccesssync_cron() {
   $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
   $ad_password = variable_get('isushibsiteaccesssync_ad_password', '');
   $ad_group_names = variable_get('isushibsiteaccesssync_ad_group_names', '');

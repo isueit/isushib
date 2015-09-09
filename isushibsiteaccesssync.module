@@ -21,5 +21,9 @@ function isushibsiteaccesssync_cron() {
   if ($ad_username == '' || $ad_password == '' || empty($ad_group_names)) {
     return;
   }
-  watchdog('isushibsiteaccesssync', 'In cron');
+  
+  $ad_group_names = array_map('trim', $ad_group_names);
+  foreach ($ad_group_names as $ad_group_name) {
+    watchdog('isushibsiteaccesssync', t('*%name*', array('%name' => $ad_group_name)));
+  }
 }

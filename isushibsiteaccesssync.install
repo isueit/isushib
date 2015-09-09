@@ -4,3 +4,21 @@
  * @file
  * Installation file for shibboleth site access sync module.
  */
+
+/**
+ * Implements hook_install().
+ */
+function isushibsiteaccesssync_install() {
+  $newfield = array(
+    'description' => 'Status of username, can be AD, notAD, delete, new',
+    'type' => 'varchar',
+    'length' => '60',
+    'not null' => TRUE,
+    'default' => 'notAD',
+  );
+
+  if (!db_field_exists('isushibsiteaccess_users', 'status')) {
+    db_add_field('isushibsiteaccess_users', 'status', $newfield);
+  }
+}
+

@@ -1,0 +1,6 @@
+<?php
+
+/**
+ * @file
+ * Syncs the access list with Active Directory group(s).
+ */

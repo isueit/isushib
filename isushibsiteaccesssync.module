@@ -4,3 +4,21 @@
  * @file
  * Syncs the access list with Active Directory group(s).
  */
+
+
+/**
+ * Implements hook_cron().
+ */
+function isushibsiteaccess_cron() {
+  $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
+  $ad_password = variable_get('isushibsiteaccesssync_ad_password', '');
+  $ad_group_names = variable_get('isushibsiteaccesssync_ad_group_names', '');
+  $ad_ldap_server = variable_get('isushibsiteaccesssync_ad_ldap_server', 'windc.iastate.edu');
+  $ad_ldap_dn = variable_get('isushibsiteaccesssync_ad_ldap_dn', 'dc=iastate,dc=edu');
+
+  // Exit if we don't have the variables that we need.
+  if ($ad_username == '' || $ad_password == '' || $ad_group_names == '') {
+    return;
+  }
+  watchdog('isushibsiteaccesssync', 'In cron');
+}

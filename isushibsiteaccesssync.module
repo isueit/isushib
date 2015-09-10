@@ -70,6 +70,8 @@ function isushibsiteaccesssync_cron() {
     }
 
   }
+
+  isushibsiteaccesssync_revoke_users();
 }
 
 /**
@@ -107,5 +109,44 @@ function isushibsiteaccesssync_handle_user($username) {
       'status' => 'AD',
     );
     drupal_write_record('isushibsiteaccess_users', $record);
+  }
+}
+
+/**
+ * Revoke access to anyone who's status is still Delete
+ */
+function isushibsiteaccesssync_revoke_users() {
+  // Select the records where status = Delete
+  $query = db_select('isushibsiteaccess_users', 'pu')
+    ->fields('pu', array('fuid', 'name', 'status'))
+    ->condition('status', 'Delete', '=');
+  $results = $query->execute();
+
+  foreach ($results as $row) {
+    $u = user_load_by_name($row->name);
+
+    if ($u) {
+      // User exists, block the user account
+      if ($u->status != 0) {
+        $u->status = 0;
+        user_save($u);
+
+        watchdog('isushibsiteaccesssync', 'Blocked current user %name.', array('%name' => $row->name));
+      }
+    }
+    else {
+      // User doesn't exist, delete any roles from isushibsiteaccess
+      db_delete('isushibsiteaccess_roles')
+        ->condition('fuid', $row->fuid, '=')
+        ->execute();
+      watchdog('isushibsiteaccesssync', 'Deleted roles for %name.', array('%name' => $row->name));
+
+      // Delete the entry from isushibsiteaccess_users
+      db_delete('isushibsiteaccess_users')
+        ->condition('fuid', $row->fuid, '=')
+        ->execute();
+
+      watchdog('isushibsiteaccesssync', 'Deleted user entry for %name.', array('%name' => $row->name));
+    }
   }
 }

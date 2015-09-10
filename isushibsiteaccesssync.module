@@ -56,7 +56,10 @@ function isushibsiteaccesssync_cron() {
   // Set some LDAP options
   ldap_set_option($directory_service, LDAP_OPT_REFERRALS, 0);
   ldap_set_option($directory_service, LDAP_OPT_PROTOCOL_VERSION, 3);
-  ldap_bind($directory_service, $ad_username, $ad_password);
+  if (!ldap_bind($directory_service, $ad_username, $ad_password)) {
+    watchdog('isushibsiteaccesssync', 'Unable to login to read from Active Directory');
+    return;
+  }
 
   isushibsiteaccesssync_mark_users_to_delete();
 

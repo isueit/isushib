@@ -28,8 +28,41 @@ function isushibsiteaccesssync_cron() {
     return;
   }
 
+  // Make sure we can connet to the LDAP server
+  $directory_service = ldap_connect($ad_ldap_server);
+  if (!$directory_service) {
+    watchdog('isushibsiteaccesssync', 'Could not connect to LDAP server.');
+    return;
+  }
+
+
+  // Set some LDAP options
+  ldap_set_option($directory_service, LDAP_OPT_REFERRALS, 0);
+  ldap_set_option($directory_service, LDAP_OPT_PROTOCOL_VERSION, 3);
+  ldap_bind($directory_service, $ad_username, $ad_password);
+
   $ad_group_names = array_map('trim', $ad_group_names);
   foreach ($ad_group_names as $ad_group_name) {
-    watchdog('isushibsiteaccesssync', t('*%name*', array('%name' => $ad_group_name)));
+
+    // Do the actual search
+    $search_term = '(cn=' . $ad_group_name . ')';
+    $sr = ldap_search($directory_service, $ad_ldap_dn, $search_term);
+    $info = ldap_get_entries($directory_service, $sr);
+
+    // Check that we found something
+    if ($info['count'] == 0) {
+      watchdog('isushibsiteaccesssync', 'Can not read from %name.', array('%name' => $ad_group_name));
+      continue;
+    }
+
+    // One key pair is the count, don't need to keep this
+    $group_membership = $info[0]['member'];
+    unset($group_membership['count']);
+
+    // Handle each member of the group
+    foreach ($group_membership as $key => $value) {
+      watchdog('isushibsiteaccesssync', '%key: %name', array('%key' => $key, '%name' => $value));
+    }
+
   }
 }

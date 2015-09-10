@@ -41,6 +41,8 @@ function isushibsiteaccesssync_cron() {
   ldap_set_option($directory_service, LDAP_OPT_PROTOCOL_VERSION, 3);
   ldap_bind($directory_service, $ad_username, $ad_password);
 
+  isushibsiteaccesssync_mark_users_to_delete();
+
   foreach ($ad_group_names as $ad_group_name) {
 
     // Do the actual search
@@ -65,4 +67,14 @@ function isushibsiteaccesssync_cron() {
     }
 
   }
+}
+
+/**
+ * Mark all AD users to delete.
+ */
+function isushibsiteaccesssync_mark_users_to_delete() {
+  db_update('isushibsiteaccess_users')
+    ->fields(array('status' => 'AD'))
+    ->condition('status', 'Delete', '=')
+    ->execute();
 }

@@ -7,6 +7,23 @@
 
 
 /**
+ * Implements hook_menu().
+ */
+function isushibsiteaccesssync_menu() {
+  $items['admin/config/people/isushibsiteaccesssync'] = array(
+    'title' => 'Configure AD Sync',
+    'description' => 'Edit settings for Active Directory sync.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('isushibsiteaccesssync_settings'),
+    'access arguments' => array('administer shibboleth site access ad sync'),
+    'file' => 'isushibsiteaccesssync.admin.inc',
+  );
+
+  return $items;
+}
+
+
+/**
  * Implements hook_cron().
  */
 function isushibsiteaccesssync_cron() {

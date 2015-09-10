@@ -21,7 +21,13 @@ function isushibsiteaccesssync_cron() {
   if ($ad_username == '' || $ad_password == '' || empty($ad_group_names)) {
     return;
   }
-  
+
+  // Make sure we have LDAP extensions installed
+  if (!function_exists('ldap_connect')) {
+    watchdog('isushibsiteaccesssync', 'PHP LDAP extensions not installed, exiting.');
+    return;
+  }
+
   $ad_group_names = array_map('trim', $ad_group_names);
   foreach ($ad_group_names as $ad_group_name) {
     watchdog('isushibsiteaccesssync', t('*%name*', array('%name' => $ad_group_name)));

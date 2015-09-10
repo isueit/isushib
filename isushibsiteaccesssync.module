@@ -41,10 +41,10 @@ function isushibsiteaccesssync_cron() {
   ldap_set_option($directory_service, LDAP_OPT_PROTOCOL_VERSION, 3);
   ldap_bind($directory_service, $ad_username, $ad_password);
 
-  $ad_group_names = array_map('trim', $ad_group_names);
   foreach ($ad_group_names as $ad_group_name) {
 
     // Do the actual search
+    $ad_group_name = trim($ad_group_name);
     $search_term = '(cn=' . $ad_group_name . ')';
     $sr = ldap_search($directory_service, $ad_ldap_dn, $search_term);
     $info = ldap_get_entries($directory_service, $sr);

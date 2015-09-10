@@ -126,6 +126,8 @@ function isushibsiteaccesssync_handle_user($username) {
       'status' => 'AD',
     );
     drupal_write_record('isushibsiteaccess_users', $record);
+
+    watchdog('isushibsiteaccesssync', 'Added user %name', array('%name' => $username));
   }
 }
 

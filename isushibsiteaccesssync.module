@@ -63,7 +63,10 @@ function isushibsiteaccesssync_cron() {
 
     // Handle each member of the group
     foreach ($group_membership as $key => $value) {
-      watchdog('isushibsiteaccesssync', '%key: %name', array('%key' => $key, '%name' => $value));
+      $username = str_replace('CN=', '', $value);
+      $username = substr($username, 0, stripos($username, ','));
+
+      isushibsiteaccesssync_handle_user($username);
     }
 
   }
@@ -74,7 +77,35 @@ function isushibsiteaccesssync_cron() {
  */
 function isushibsiteaccesssync_mark_users_to_delete() {
   db_update('isushibsiteaccess_users')
-    ->fields(array('status' => 'AD'))
-    ->condition('status', 'Delete', '=')
+    ->fields(array('status' => 'Delete'))
+    ->condition('status', 'AD', '=')
     ->execute();
+}
+
+/**
+ * Make sure the user has access
+ */
+function isushibsiteaccesssync_handle_user($username) {
+  // Select the user's record
+  $query = db_select('isushibsiteaccess_users', 'pu')
+    ->fields('pu', array('fuid', 'name', 'status'))
+    ->condition('name', $username, '=');
+  $results = $query->execute();
+
+  // Check if the user exists
+  if ($results->rowCount() == 1) {
+    //Update the status
+    $num_updated = db_update('isushibsiteaccess_users')
+      ->fields(array('status' => 'AD'))
+      ->condition('name', $username, '=')
+      ->execute();
+  }
+  else {
+    // Add user record.
+    $record = array(
+      'name' => $username,
+      'status' => 'AD',
+    );
+    drupal_write_record('isushibsiteaccess_users', $record);
+  }
 }

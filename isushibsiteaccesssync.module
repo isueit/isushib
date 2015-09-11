@@ -36,6 +36,7 @@ function isushibsiteaccesssync_cron() {
   // Exit if we don't have the variables that we need.
   $ad_group_names = array_filter($ad_group_names);
   if ($ad_username == '' || $ad_password == '' || empty($ad_group_names)) {
+    watchdog('isushibsiteaccesssync', 'Missing variables. Configure AD Sync to allow module to work.');
     return;
   }
 

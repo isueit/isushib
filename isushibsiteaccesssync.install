@@ -9,6 +9,7 @@
  * Implements hook_install().
  */
 function isushibsiteaccesssync_install() {
+  // Add status field to the isushibsiteaccess_users table
   $newfield = array(
     'description' => 'Status of username, can be AD, notAD, delete, new',
     'type' => 'varchar',
@@ -20,6 +21,13 @@ function isushibsiteaccesssync_install() {
   if (!db_field_exists('isushibsiteaccess_users', 'status')) {
     db_add_field('isushibsiteaccess_users', 'status', $newfield);
   }
+
+  // Create a random IV to use with CBC encoding / encryption
+  $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+  variable_set('isushibsiteaccesssync_encryption_iv', mcrypt_create_iv($iv_size, MCRYPT_RAND));
+
+  // Create a random key for encryption
+  variable_set('isushibsiteaccesssync_encryption_key', pack('H*', bin2hex(openssl_random_pseudo_bytes(32))));
 }
 
 
@@ -45,6 +53,8 @@ function isushibsiteaccesssync_uninstall() {
   variable_del('isushibsiteaccesssync_ad_group_names');
   variable_del('isushibsiteaccesssync_ad_ldap_server');
   variable_del('isushibsiteaccesssync_ad_ldap_dn');
+  variable_del('isushibsiteaccesssync_encryption_iv');
+  variable_del('isushibsiteaccesssync_encryption_key');
 
   db_drop_field('isushibsiteaccess_users', 'status');
 }

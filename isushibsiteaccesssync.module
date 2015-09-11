@@ -93,6 +93,7 @@ function isushibsiteaccesssync_cron() {
   }
 
   isushibsiteaccesssync_revoke_users();
+  ldap_close($directory_service);
 }
 
 /**

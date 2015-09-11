@@ -19,7 +19,7 @@ function isushibsiteaccesssync_settings() {
   );
 
   $form['isushibsiteaccesssync']['isushibsiteaccesssync_ad_password'] = array(
-    '#type' => 'textfield',
+    '#type' => 'password',
     '#title' => t('Password'),
     '#default_value' => t(''),
     '#description' => t('Password for the above account. Note: this is not a secure password storage facility, so you should be using an account that has basically no rights. This field is blank even if a password is already set, that\'s OK.'),

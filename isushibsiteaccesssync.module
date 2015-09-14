@@ -93,6 +93,12 @@ function isushibsiteaccesssync_cron() {
   }
 
   isushibsiteaccesssync_revoke_users();
+
+  db_update('isushibsiteaccess_users')
+      ->fields(array('status' => 'notAD'))
+      ->condition('status', 'Delete', '=')
+      ->execute();
+
   ldap_close($directory_service);
 }
 

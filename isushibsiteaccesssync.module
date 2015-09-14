@@ -31,7 +31,6 @@ function isushibsiteaccesssync_cron() {
   if (variable_get('isushibsiteaccesssync_day_of_year', 0) == date('z') + 1) {
     return;
   }
-  variable_set('isushibsiteaccesssync_day_of_year', date('z') + 1);
 
   // Read some variables
   $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
@@ -107,7 +106,7 @@ function isushibsiteaccesssync_cron() {
       ->execute();
 
   ldap_close($directory_service);
-
+  variable_set('isushibsiteaccesssync_day_of_year', date('z') + 1);
   watchdog('isushibsiteaccesssync', 'Finished syncing users from AD group(s).');
 }
 

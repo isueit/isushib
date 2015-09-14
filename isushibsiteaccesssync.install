@@ -55,6 +55,7 @@ function isushibsiteaccesssync_uninstall() {
   variable_del('isushibsiteaccesssync_ad_ldap_dn');
   variable_del('isushibsiteaccesssync_encryption_iv');
   variable_del('isushibsiteaccesssync_encryption_key');
+  variable_del('isushibsiteaccesssync_day_of_year');
 
   db_drop_field('isushibsiteaccess_users', 'status');
 }

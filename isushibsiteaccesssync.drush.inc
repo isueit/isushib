@@ -23,7 +23,7 @@ function isushibsiteaccesssync_drush_command() {
  * Force the sync via drush command.
  */
 function isushibsiteaccesssync_run_drush_command() {
-  variable_set('isushibsiteaccesssync_day_of_year', 0);
-  isushibsiteaccesssync_cron();
+  watchdog('isushibsiteaccesssync', 'Starting sync from drush command.');
+  isushibsiteaccesssync_main();
 }
 

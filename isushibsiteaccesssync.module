@@ -32,6 +32,16 @@ function isushibsiteaccesssync_cron() {
     return;
   }
 
+  watchdog('isushibsiteaccesssync', 'Starting sync from cron.');
+  isushibsiteaccesssync_main();
+
+  variable_set('isushibsiteaccesssync_day_of_year', date('z') + 1);
+}
+
+/**
+ * Sync the lists
+ */
+function isushibsiteaccesssync_main() {
   // Read some variables
   $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
   $ad_password = trim(isushibsiteaccesssync_decrypt_string(variable_get('isushibsiteaccesssync_ad_password', '')));
@@ -106,7 +116,7 @@ function isushibsiteaccesssync_cron() {
       ->execute();
 
   ldap_close($directory_service);
-  variable_set('isushibsiteaccesssync_day_of_year', date('z') + 1);
+
   watchdog('isushibsiteaccesssync', 'Finished syncing users from AD group(s).');
 }
 

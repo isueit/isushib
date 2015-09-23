@@ -190,13 +190,6 @@ function isushibsiteaccesssync_revoke_users() {
 }
 
 /**
- * Return a binary key for encryption
- */
-function isushibsiteaccesssync_get_encryption_key() {
-  return pack('H*', 'ad4e53fead34d289adee7432cd3a432e4b4532dff32889323d44dc342ac32d32');
-}
-
-/**
  * Returns an encrypted string
  */
 function isushibsiteaccesssync_encrypt_string($plaintext) {

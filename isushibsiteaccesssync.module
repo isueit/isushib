@@ -28,14 +28,10 @@ function isushibsiteaccesssync_menu() {
  */
 function isushibsiteaccesssync_cron() {
   // Only run this once per day
-  if (variable_get('isushibsiteaccesssync_day_of_year', 0) == date('z') + 1) {
-    return;
+  if (variable_get('isushibsiteaccesssync_last_run', '20150101') < date('Ymd')) {
+    watchdog('isushibsiteaccesssync', 'Starting sync from cron.');
+    isushibsiteaccesssync_main();
   }
-
-  watchdog('isushibsiteaccesssync', 'Starting sync from cron.');
-  isushibsiteaccesssync_main();
-
-  variable_set('isushibsiteaccesssync_day_of_year', date('z') + 1);
 }
 
 /**
@@ -117,6 +113,7 @@ function isushibsiteaccesssync_main() {
 
   ldap_close($directory_service);
 
+  variable_set('isushibsiteaccesssync_last_run', date('Ymd'));
   watchdog('isushibsiteaccesssync', 'Finished syncing users from AD group(s).');
 }
 

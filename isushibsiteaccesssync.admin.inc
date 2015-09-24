@@ -61,7 +61,7 @@ function isushibsiteaccesssync_settings_validate($form, &$form_state) {
   }
   else {
     if ($new_password != $saved_password) {
-      $form_state['values']['isushibsiteaccesssync_ad_password'] = isushibsiteaccesssync_encrypt_string($new_password);
+      $form_state['values']['isushibsiteaccesssync_ad_password'] = encrypt($new_password);
     }
   }
 }

@@ -3,6 +3,7 @@ description = Syncs the access list with Active Directory group(s).
 package = External authentication
 dependencies[] = isushib
 dependencies[] = isushibsiteaccess
+dependencies[] = encrypt
 core = 7.x
 configure = admin/config/people/isushibsiteaccess
 

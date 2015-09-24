@@ -40,7 +40,7 @@ function isushibsiteaccesssync_cron() {
 function isushibsiteaccesssync_main() {
   // Read some variables
   $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
-  $ad_password = trim(isushibsiteaccesssync_decrypt_string(variable_get('isushibsiteaccesssync_ad_password', '')));
+  $ad_password = trim(decrypt(variable_get('isushibsiteaccesssync_ad_password', '')));
   $ad_group_names = explode(',', variable_get('isushibsiteaccesssync_ad_group_names', ''));
   $ad_ldap_server = variable_get('isushibsiteaccesssync_ad_ldap_server', 'windc.iastate.edu');
   $ad_ldap_dn = variable_get('isushibsiteaccesssync_ad_ldap_dn', 'dc=iastate,dc=edu');
@@ -195,24 +195,4 @@ function isushibsiteaccesssync_revoke_users() {
     }
   }
 }
-
-/**
- * Returns an encrypted string
- */
-function isushibsiteaccesssync_encrypt_string($plaintext) {
-  // creates a cipher text compatible with AES (Rijndael block size = 128)
-  // to keep the text confidential
-  // only suitable for encoded input that never ends with value 00h
-  // (because of default zero padding)
-  return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, variable_get('isushibsiteaccesssync_encryption_key', ''), $plaintext, MCRYPT_MODE_CBC, variable_get('isushibsiteaccesssync_encryption_iv', ''));
-}
-
-/**
- * Returns a decrypted string
- */
-function isushibsiteaccesssync_decrypt_string($encrypted_string) {
-  // may remove 00h valued characters from end of plain text
-  return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, variable_get('isushibsiteaccesssync_encryption_key', ''), $encrypted_string, MCRYPT_MODE_CBC, variable_get('isushibsiteaccesssync_encryption_iv', ''));
-}
-
 

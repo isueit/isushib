@@ -11,7 +11,7 @@
 function isushibsiteaccesssync_install() {
   // Add status field to the isushibsiteaccess_users table
   $newfield = array(
-    'description' => 'Status of username, can be AD, notAD, delete, new',
+    'description' => 'Tells whether the user came from Active Directory or not.',
     'type' => 'varchar',
     'length' => '60',
     'not null' => TRUE,
@@ -36,7 +36,7 @@ function isushibsiteaccesssync_install() {
  */
 function isushibsiteaccesssync_schema_alter(&$schema) {
   $schema['isushibsiteaccess_users']['fields']['status'] = array(
-    'description' => 'Status of username, can be AD, notAD, delete, new',
+    'description' => 'Tells whether the user came from Active Directory or not.',
     'type' => 'varchar',
     'length' => '60',
     'not null' => TRUE,

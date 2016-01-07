@@ -42,7 +42,7 @@ function isushibsiteaccesssync_main() {
   $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
   $ad_password = trim(decrypt(variable_get('isushibsiteaccesssync_ad_password', '')));
   $ad_group_names = explode(',', variable_get('isushibsiteaccesssync_ad_group_names', ''));
-  $ad_ldap_server = variable_get('isushibsiteaccesssync_ad_ldap_server', 'windc.iastate.edu');
+  $ad_ldap_server = variable_get('isushibsiteaccesssync_ad_ldap_server', 'ldaps://windc.iastate.edu:636');
   $ad_ldap_dn = variable_get('isushibsiteaccesssync_ad_ldap_dn', 'dc=iastate,dc=edu');
 
   // Exit if we don't have the variables that we need.

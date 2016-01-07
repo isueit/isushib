@@ -35,7 +35,7 @@ function isushibsiteaccesssync_settings() {
   $form['isushibsiteaccesssync']['isushibsiteaccesssync_ad_ldap_server'] = array(
     '#type' => 'textfield',
     '#title' => t('Active Domain Controller'),
-    '#default_value' => variable_get('isushibsiteaccesssync_ad_ldap_server', 'windc.iastate.edu'),
+    '#default_value' => variable_get('isushibsiteaccesssync_ad_ldap_server', 'ldaps://windc.iastate.edu:636'),
     '#description' => t('Fully Quallified Domain Name of the AD domain controller.'),
   );
 

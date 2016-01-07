@@ -38,6 +38,9 @@ function isushibsiteaccesssync_cron() {
  * Sync the lists
  */
 function isushibsiteaccesssync_main() {
+  // Set last run variable_get
+  variable_set('isushibsiteaccesssync_last_run', date('Ymd'));
+
   // Read some variables
   $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
   $ad_password = trim(decrypt(variable_get('isushibsiteaccesssync_ad_password', '')));
@@ -113,7 +116,6 @@ function isushibsiteaccesssync_main() {
 
   ldap_close($directory_service);
 
-  variable_set('isushibsiteaccesssync_last_run', date('Ymd'));
   watchdog('isushibsiteaccesssync', 'Finished syncing users from AD group(s).');
 }
 

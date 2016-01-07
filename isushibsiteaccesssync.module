@@ -11,7 +11,7 @@
  */
 function isushibsiteaccesssync_menu() {
   $items['admin/config/people/isushibsiteaccesssync'] = array(
-    'title' => 'Configure AD Sync',
+    'title' => 'Active Directory Sync',
     'description' => 'Edit settings for Active Directory sync.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('isushibsiteaccesssync_settings'),

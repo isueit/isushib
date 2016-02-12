@@ -44,6 +44,23 @@ function isushibsiteaccess_drush_command() {
 function drush_isushibsiteaccess_shib_addusers() {
   $args = drush_get_arguments();
   $options = drush_get_option('roles');
+
+  foreach ($args as $name) {
+    // First argument is the name of the command, ie shib-addusers
+    if ($name == "shib-addusers") {
+      continue;
+    }
+
+    // If user_validate_name() returns anything it's a bad sign.
+    if (user_validate_name($name)) {
+      drush_log($name . " is not a valid username\n", 'error');
+      continue;
+    }
+
+    // User will be added here
+
+    // Roles will be added here
+  }
 }
 
 /**

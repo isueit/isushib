@@ -185,3 +185,25 @@ function isushibsiteaccess_get_name($fuid) {
   
   return $name;
 }
+
+/**
+ * Add a future user name to the access list.
+ *
+ * @param string $name
+ * @return int - $fuid or 0 if alread in access list
+ */
+function isushibsiteaccess_add_name_to_list($name) {
+  // Does the user already exist as a future user?
+  $fuid = isushibsiteaccess_get_fuid($name);
+  if ($fuid) {
+    return(0);
+  }
+
+  // Add user record.
+  $record = array(
+    'name' => $name,
+  );
+  drupal_write_record('isushibsiteaccess_users', $record);
+
+  return($record['fuid']);
+}

@@ -144,25 +144,21 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
     $status = $u ? t('current') : t('future');
     
     // Does the user already exist as a future user?
-    $fuid = isushibsiteaccess_get_fuid($name);
+    $fuid = isushibsiteaccess_add_name_to_list($name);
     if ($fuid) {
+      // User was added.
+      if ($single_user_being_added) {
+        drupal_set_message(t('Added %status user %name.', array('%status' => $status, '%name' => $name)));
+      }
+      else {
+        $count++;
+      }
+    }
+    else {
       form_set_error('isushibsiteaccess_existing_user', t('User %name has already been added as a @status user; skipping this user.', array('%name' => $name, '@status' => $status)));
       continue;
     }
     
-    // Add user record.
-    $record = array(
-      'name' => $name,
-    );
-    drupal_write_record('isushibsiteaccess_users', $record);
-    $status = $u ? t('current') : t('future');
-    if ($single_user_being_added) {
-      drupal_set_message(t('Added %status user %name.', array('%status' => $status, '%name' => $name)));
-    }
-    else {
-      $count++;
-    }
-    $fuid = $record['fuid'];
   
     // Add roles chosen for user.
     if (isset($form_state['values']['future_user_roles']) && user_access('administer shibboleth future roles')) {

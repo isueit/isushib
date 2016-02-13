@@ -53,13 +53,17 @@ function drush_isushibsiteaccess_shib_addusers() {
 
     // If user_validate_name() returns anything it's a bad sign.
     if (user_validate_name($name)) {
-      drush_log($name . " is not a valid username\n", 'error');
+      drush_log($name . " is not a valid username", 'error');
       continue;
     }
 
-    // User will be added here
-
-    // Roles will be added here
+    $fuid = isushibsiteaccess_add_name_to_list($name);
+    if ($fuid) {
+      drush_log($name . " has been added to access list", 'ok');
+    }
+    else {
+      drush_log($name . " was already on the access list", 'warning');
+    }
   }
 }
 

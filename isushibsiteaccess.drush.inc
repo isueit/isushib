@@ -13,6 +13,7 @@ function isushibsiteaccess_drush_command() {
 
   $items['shib-addusers'] = array(
     'description' => 'Add user(s) to the shibboleth site access list',
+    'aliases' => array('shib'),
     'arguments' => array(
       'users' => 'List of users to add',
     ),
@@ -21,7 +22,7 @@ function isushibsiteaccess_drush_command() {
     ),
     'examples' => array(
       'drush shib-addusers user1' => 'Adds user1 with no future roles',
-      'drush shib-addusers user1 user2 --roles=site-editor,site-munger' => 'Adds user1 and user2 to the access list, giving them the future role of site-editor and site-munger',
+      'drush shib-addusers user1 user2 --roles="content editor, content publisher"' => 'Adds user1 and user2 to the access list, giving them the future roles of content editor and content publisher',
     ),
   );
 
@@ -37,6 +38,27 @@ function isushibsiteaccess_drush_command() {
 
   return $items;
 }
+
+/**
+ * Implements hook_drush_help().
+ *
+ * @param string $section
+ *   The help section.
+ *
+ * @return string
+ *   The help text for the command.
+ */
+function isushibsiteaccess_drush_help($section) {
+  switch ($section) {
+    case 'drush:shib-addusers':{
+      return 'Add user(s) to the shibboleth site access list.';
+    }
+    case 'drush:shib-rmusers':{
+      return 'Remove user(s) from the shibboleth site access list.';
+    }
+  }
+}
+
 
 /**
  * Add user(s) to the access list

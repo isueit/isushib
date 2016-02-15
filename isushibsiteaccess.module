@@ -190,9 +190,11 @@ function isushibsiteaccess_get_name($fuid) {
  * Add a future user name to the access list.
  *
  * @param string $name
+ * @param string $user
+ * @param string $module_name
  * @return int - $fuid or 0 if alread in access list
  */
-function isushibsiteaccess_add_name_to_list($name) {
+function isushibsiteaccess_add_name_to_list($name, $user, $module_name) {
   // Does the user already exist as a future user?
   $fuid = isushibsiteaccess_get_fuid($name);
   if ($fuid) {
@@ -204,6 +206,16 @@ function isushibsiteaccess_add_name_to_list($name) {
     'name' => $name,
   );
   drupal_write_record('isushibsiteaccess_users', $record);
+
+
+  // Unblock user if existing account is blocked
+  if ($user && ($user->status == 0)) {
+    db_update('users')
+      ->fields(array('status' => 1))
+      ->condition('name', $username, '=')
+      ->execute();
+    isushibsiteaccess_user_feedback("Unblocked user " . $name, 'print', $module_name);
+  }
 
   return ($record['fuid']);
 }

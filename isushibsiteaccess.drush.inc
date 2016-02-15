@@ -63,7 +63,7 @@ function drush_isushibsiteaccess_shib_addusers() {
     $user_exists = !empty($u);
 
     // Give user access
-    $fuid = isushibsiteaccess_add_name_to_list($name);
+    $fuid = isushibsiteaccess_add_name_to_list($name, $u, 'drush-addusers');
     if ($fuid) {
       drush_log("Added " . $status . " user " . $name , 'ok');
     }

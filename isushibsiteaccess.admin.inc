@@ -144,7 +144,7 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
     $status = $u ? t('current') : t('future');
     
     // Does the user already exist as a future user?
-    $fuid = isushibsiteaccess_add_name_to_list($name);
+    $fuid = isushibsiteaccess_add_name_to_list($name, $u, 'isushibsiteaccess');
     if ($fuid) {
       // User was added.
       if ($single_user_being_added) {

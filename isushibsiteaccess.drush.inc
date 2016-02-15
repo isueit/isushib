@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_drush_command()
+ * Implements hook_drush_command().
  */
 function isushibsiteaccess_drush_command() {
   $items = array();
@@ -47,7 +47,7 @@ function drush_isushibsiteaccess_shib_addusers() {
   $assignable_roles = isushibsiteaccess_available_roles();
 
   foreach ($args as $name) {
-    // First argument is the name of the command, ie shib-addusers
+    // First argument is the name of the command, i.e. shib-addusers
     if ($name == "shib-addusers") {
       continue;
     }
@@ -65,7 +65,7 @@ function drush_isushibsiteaccess_shib_addusers() {
     // Give user access
     $fuid = isushibsiteaccess_add_name_to_list($name);
     if ($fuid) {
-      drush_log("Added ". $status . " user " . $name . ".", 'ok');
+      drush_log("Added " . $status . " user " . $name , 'ok');
     }
     else {
       drush_log($name . " was already on the access list", 'warning');
@@ -92,7 +92,7 @@ function drush_isushibsiteaccess_shib_addusers() {
         drush_print("Added role " . $role_name . " for " . $status . " user " . $name . ".");
       }
       else {
-	drush_log($role_name . ' is not an assignable role.', 'warning');
+        drush_log($role_name . ' is not an assignable role.', 'warning');
       }
     }
   }
@@ -105,7 +105,7 @@ function drush_isushibsiteaccess_shib_rmusers() {
   $args = drush_get_arguments();
 
   foreach ($args as $name) {
-    // First argument is the name of the command, ie shib-addusers
+    // First argument is the name of the command, i.e. shib-rmusers
     if ($name == "shib-rmusers") {
       continue;
     }

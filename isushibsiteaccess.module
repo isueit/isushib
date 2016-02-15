@@ -196,7 +196,7 @@ function isushibsiteaccess_add_name_to_list($name) {
   // Does the user already exist as a future user?
   $fuid = isushibsiteaccess_get_fuid($name);
   if ($fuid) {
-    return(0);
+    return (0);
   }
 
   // Add user record.
@@ -205,7 +205,7 @@ function isushibsiteaccess_add_name_to_list($name) {
   );
   drupal_write_record('isushibsiteaccess_users', $record);
 
-  return($record['fuid']);
+  return ($record['fuid']);
 }
 
 /**
@@ -249,7 +249,7 @@ function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteac
       ->execute();
     isushibsiteaccess_user_feedback("Blocked user " . $name, 'print', $module_name);
   }
- 
+
   isushibsiteaccess_user_feedback("Revolked access for " . $name, 'success', $module_name);
 }
 

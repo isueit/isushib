@@ -214,7 +214,7 @@ function isushibsiteaccess_add_name_to_list($name, $user, $module_name) {
       ->fields(array('status' => 1))
       ->condition('name', $username, '=')
       ->execute();
-    isushibsiteaccess_user_feedback("Unblocked user " . $name, 'print', $module_name);
+    isushibsiteaccess_user_feedback("Unblocked user " . $name, 'success', $module_name);
   }
 
   return ($record['fuid']);
@@ -241,6 +241,10 @@ function isushibsiteaccess_assign_role_to_future_user($fuid, $rid) {
  * @param string $module_name
  */
 function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteaccess') {
+  // Does user already exist in Drupal?
+  $user = user_load_by_name($name);
+  $status = $user ? t('current') : t('future');
+
   // Delete role records for fuid
   db_delete('isushibsiteaccess_roles')
     ->condition('fuid', $fuid)
@@ -253,7 +257,6 @@ function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteac
     ->execute();
 
   // Block user if existing account
-  $user = user_load_by_name($name);
   if ($user && ($user->status != 0)) {
     db_update('users')
       ->fields(array('status' => 0))
@@ -262,7 +265,7 @@ function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteac
     isushibsiteaccess_user_feedback("Blocked user " . $name, 'print', $module_name);
   }
 
-  isushibsiteaccess_user_feedback("Revolked access for " . $name, 'success', $module_name);
+  isushibsiteaccess_user_feedback("Revolked access for " . $status . " user " . $name, 'success', $module_name);
 }
 
 /**

@@ -221,3 +221,57 @@ function isushibsiteaccess_assign_role_to_future_user($fuid, $rid) {
   );
   drupal_write_record('isushibsiteaccess_roles', $record);
 }
+
+/**
+ *
+ * @param string $name
+ * @param int $fuid
+ * @param string $module_name
+ */
+function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteaccess') {
+  // Delete role records for fuid
+  db_delete('isushibsiteaccess_roles')
+    ->condition('fuid', $fuid)
+    ->execute();
+  isushibsiteaccess_user_feedback("Deleted roles for " . $name, 'print', $module_name);
+
+  // Delete record for fuid
+  db_delete('isushibsiteaccess_users')
+    ->condition('fuid', $fuid)
+    ->execute();
+
+  // Block user if existing account
+  $user = user_load_by_name($name);
+  if ($user && ($user->status != 0)) {
+    db_update('users')
+      ->fields(array('status' => 0))
+      ->condition('name', $username, '=')
+      ->execute();
+    isushibsiteaccess_user_feedback("Blocked user " . $name, 'print', $module_name);
+  }
+ 
+  isushibsiteaccess_user_feedback("Revolked access for " . $name, 'success', $module_name);
+}
+
+/**
+ * Give User Feedback on what we're doing
+ *
+ * @param $message
+ * @param $type
+ * @param $module_name
+ */
+function isushibsiteaccess_user_feedback($message, $type, $module_name = 'isushibsiteaccess') {
+  if (function_exists('drush_log')) {
+    // We're in drush
+    if ($type == 'print') {
+      drush_print($message);
+    }
+    else {
+      drush_log($message, $type);
+    }
+  }
+  else {
+    // We're in Drupal, use watchdog
+    watchdog($module_name, $message);
+  }
+}

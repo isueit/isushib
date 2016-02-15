@@ -326,17 +326,7 @@ function isushibsiteaccess_user_delete_confirm_submit($form, &$form_state) {
   $fuid = $form_state['values']['fuid'];
   $name = $form_state['values']['name'];
   if ($form_state['values']['confirm']) {
-    // Delete role records for fuid
-    db_delete('isushibsiteaccess_roles')
-      ->condition('fuid', $fuid)
-      ->execute();
-    watchdog('isushibsiteaccess', 'deleted roles for %name', array('%name' => $name));
-  
-    // Delete record for fuid
-    db_delete('isushibsiteaccess_users')
-      ->condition('fuid', $fuid)
-      ->execute();   
-    watchdog('isushibsiteaccess', 'deleted user entry for %name', array('%name' => $name));   
+    isushibsiteaccess_revolk_user($name, $fuid, 'isushibsiteaccess');
   }
   drupal_set_message(t('Future user %name has been deleted.', array('%name' => $name)));
   $form_state['redirect'] = 'admin/config/people/isushibsiteaccess';

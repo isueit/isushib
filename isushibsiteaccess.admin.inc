@@ -179,11 +179,7 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
           }
           else {
             // Assign role to future user.
-            $record = array(
-              'fuid' => $fuid,
-              'rid' => $rid,
-            );
-            drupal_write_record('isushibsiteaccess_roles', $record);
+            isushibsiteaccess_assign_role_to_future_user($fuid, $rid);
             if ($single_user_being_added) {
               drupal_set_message(t('Added role %role for future user %name.', array('%role' => $assignable_roles[$rid], '%name' => $name)));
             }

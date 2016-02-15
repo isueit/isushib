@@ -207,3 +207,17 @@ function isushibsiteaccess_add_name_to_list($name) {
 
   return($record['fuid']);
 }
+
+/**
+ * Assign role to a future user.
+ *
+ * @param int $fuid
+ * @param int $rid
+ */
+function isushibsiteaccess_assign_role_to_future_user($fuid, $rid) {
+  $record = array(
+    'fuid' => $fuid,
+    'rid' => $rid,
+  );
+  drupal_write_record('isushibsiteaccess_roles', $record);
+}

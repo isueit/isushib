@@ -43,7 +43,8 @@ function isushibsiteaccess_drush_command() {
  */
 function drush_isushibsiteaccess_shib_addusers() {
   $args = drush_get_arguments();
-  $options = drush_get_option('roles');
+  $requested_roles = split(',', drush_get_option('roles'));
+  $assignable_roles = isushibsiteaccess_available_roles();
 
   foreach ($args as $name) {
     // First argument is the name of the command, ie shib-addusers
@@ -56,13 +57,43 @@ function drush_isushibsiteaccess_shib_addusers() {
       drush_log($name . " is not a valid username", 'error');
       continue;
     }
+    // Does user already exist in Drupal?
+    $u = user_load_by_name($name);
+    $status = $u ? t('current') : t('future');
+    $user_exists = !empty($u);
 
+    // Give user access
     $fuid = isushibsiteaccess_add_name_to_list($name);
     if ($fuid) {
-      drush_log($name . " has been added to access list", 'ok');
+      drush_log("Added ". $status . " user " . $name . ".", 'ok');
     }
     else {
       drush_log($name . " was already on the access list", 'warning');
+    }
+
+    // Add roles, if any were given
+    foreach ($requested_roles as $role_name) {
+      // Check for empty role name
+      $role_name = trim($role_name);
+      if (empty($role_name)) {
+        continue;
+      }
+
+      // Check if it's an assignable rol and that the role actually exists
+      if (in_array($role_name, $assignable_roles) && ($role = user_role_load_by_name($role_name))) {
+        if ($user_exists) {
+          // Assign role for current user
+          user_multiple_role_edit(array($u->uid), 'add_role', $role->rid);
+        }
+        else {
+          // Assign role for future user
+          isushibsiteaccess_assign_role_to_future_user(isushibsiteaccess_get_fuid($name), $role->rid);
+        }
+        drush_print("Added role " . $role_name . " for " . $status . " user " . $name . ".");
+      }
+      else {
+	drush_log($role_name . ' is not an assignable role.', 'warning');
+      }
     }
   }
 }

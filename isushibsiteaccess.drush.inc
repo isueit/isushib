@@ -103,4 +103,19 @@ function drush_isushibsiteaccess_shib_addusers() {
  */
 function drush_isushibsiteaccess_shib_rmusers() {
   $args = drush_get_arguments();
+
+  foreach ($args as $name) {
+    // First argument is the name of the command, ie shib-addusers
+    if ($name == "shib-rmusers") {
+      continue;
+    }
+
+    $fuid = isushibsiteaccess_get_fuid($name);
+    if ($fuid) {
+      isushibsiteaccess_revolk_user($name, isushibsiteaccess_get_fuid($name), 'drush-rmusers');
+    }
+    else {
+      drush_log("User " . $name . " not on the access list", 'warning');
+    }
+  }
 }

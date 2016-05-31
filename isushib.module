@@ -57,7 +57,9 @@ function isushib_page() {
    global $secure_base_url;
    global $user;
    global $_shibboleth_user;
-
+   
+   drupal_page_is_cacheable(FALSE);
+   
   // User is already logged into Drupal but revisited the login page.
   // Move them along; we have nothing to do.
   if ($user->uid) {

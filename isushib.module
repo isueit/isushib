@@ -57,7 +57,9 @@ function isushib_page() {
    global $secure_base_url;
    global $user;
    global $_shibboleth_user;
-
+   
+   drupal_page_is_cacheable(FALSE);
+   
   // User is already logged into Drupal but revisited the login page.
   // Move them along; we have nothing to do.
   if ($user->uid) {
@@ -272,7 +274,7 @@ function isushib_login_link() {
 }
 
 function isushib_ldap_record($netid) {
-  // https://handbook.it.iastate.edu/ch27s02.html#Web_Publishing-Shibboleth-Attributes
+  // https://handbook.it.iastate.edu/ch30s02.html#Web_Publishing-Shibboleth-Attributes
   $attributes = array(
     'uid',
     'mail',

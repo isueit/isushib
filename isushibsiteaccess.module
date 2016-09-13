@@ -195,3 +195,108 @@ function isushibsiteaccess_get_name($fuid) {
   
   return $name;
 }
+
+/**
+ * Add a future user name to the access list.
+ *
+ * @param string $name
+ * @param string $user
+ * @param string $module_name
+ * @return int - $fuid or 0 if alread in access list
+ */
+function isushibsiteaccess_add_name_to_list($name, $user, $module_name) {
+  // Does the user already exist as a future user?
+  $fuid = isushibsiteaccess_get_fuid($name);
+  if ($fuid) {
+    return (0);
+  }
+
+  // Add user record.
+  $record = array(
+    'name' => $name,
+  );
+  drupal_write_record('isushibsiteaccess_users', $record);
+
+
+  // Unblock user if existing account is blocked
+  if ($user && ($user->status == 0)) {
+    db_update('users')
+      ->fields(array('status' => 1))
+      ->condition('name', $username, '=')
+      ->execute();
+    isushibsiteaccess_user_feedback("Unblocked user " . $name, 'success', $module_name);
+  }
+
+  return ($record['fuid']);
+}
+
+/**
+ * Assign role to a future user.
+ *
+ * @param int $fuid
+ * @param int $rid
+ */
+function isushibsiteaccess_assign_role_to_future_user($fuid, $rid) {
+  $record = array(
+    'fuid' => $fuid,
+    'rid' => $rid,
+  );
+  drupal_write_record('isushibsiteaccess_roles', $record);
+}
+
+/**
+ *
+ * @param string $name
+ * @param int $fuid
+ * @param string $module_name
+ */
+function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteaccess') {
+  // Does user already exist in Drupal?
+  $user = user_load_by_name($name);
+  $status = $user ? t('current') : t('future');
+
+  // Delete role records for fuid
+  db_delete('isushibsiteaccess_roles')
+    ->condition('fuid', $fuid)
+    ->execute();
+  isushibsiteaccess_user_feedback("Deleted roles for " . $name, 'print', $module_name);
+
+  // Delete record for fuid
+  db_delete('isushibsiteaccess_users')
+    ->condition('fuid', $fuid)
+    ->execute();
+
+  // Block user if existing account
+  if ($user && ($user->status != 0)) {
+    db_update('users')
+      ->fields(array('status' => 0))
+      ->condition('name', $username, '=')
+      ->execute();
+    isushibsiteaccess_user_feedback("Blocked user " . $name, 'print', $module_name);
+  }
+
+  isushibsiteaccess_user_feedback("Revolked access for " . $status . " user " . $name, 'success', $module_name);
+}
+
+/**
+ * Give User Feedback on what we're doing
+ *
+ * @param $message
+ * @param $type
+ * @param $module_name
+ */
+function isushibsiteaccess_user_feedback($message, $type, $module_name = 'isushibsiteaccess') {
+  if (function_exists('drush_log')) {
+    // We're in drush
+    if ($type == 'print') {
+      drush_print($message);
+    }
+    else {
+      drush_log($message, $type);
+    }
+  }
+  else {
+    // We're in Drupal, use watchdog
+    watchdog($module_name, $message);
+  }
+}

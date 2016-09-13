@@ -148,25 +148,21 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
     $status = $u ? t('current') : t('future');
     
     // Does the user already exist as a future user?
-    $fuid = isushibsiteaccess_get_fuid($name);
+    $fuid = isushibsiteaccess_add_name_to_list($name, $u, 'isushibsiteaccess');
     if ($fuid) {
+      // User was added.
+      if ($single_user_being_added) {
+        drupal_set_message(t('Added %status user %name.', array('%status' => $status, '%name' => $name)));
+      }
+      else {
+        $count++;
+      }
+    }
+    else {
       form_set_error('isushibsiteaccess_existing_user', t('User %name has already been added as a @status user; skipping this user.', array('%name' => $name, '@status' => $status)));
       continue;
     }
     
-    // Add user record.
-    $record = array(
-      'name' => $name,
-    );
-    drupal_write_record('isushibsiteaccess_users', $record);
-    $status = $u ? t('current') : t('future');
-    if ($single_user_being_added) {
-      drupal_set_message(t('Added %status user %name.', array('%status' => $status, '%name' => $name)));
-    }
-    else {
-      $count++;
-    }
-    $fuid = $record['fuid'];
   
     // Add roles chosen for user.
     if (isset($form_state['values']['future_user_roles']) && user_access('administer shibboleth future roles')) {
@@ -187,11 +183,7 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
           }
           else {
             // Assign role to future user.
-            $record = array(
-              'fuid' => $fuid,
-              'rid' => $rid,
-            );
-            drupal_write_record('isushibsiteaccess_roles', $record);
+            isushibsiteaccess_assign_role_to_future_user($fuid, $rid);
             if ($single_user_being_added) {
               drupal_set_message(t('Added role %role for future user %name.', array('%role' => $assignable_roles[$rid], '%name' => $name)));
             }
@@ -338,17 +330,7 @@ function isushibsiteaccess_user_delete_confirm_submit($form, &$form_state) {
   $fuid = $form_state['values']['fuid'];
   $name = $form_state['values']['name'];
   if ($form_state['values']['confirm']) {
-    // Delete role records for fuid
-    db_delete('isushibsiteaccess_roles')
-      ->condition('fuid', $fuid)
-      ->execute();
-    watchdog('isushibsiteaccess', 'deleted roles for %name', array('%name' => $name));
-  
-    // Delete record for fuid
-    db_delete('isushibsiteaccess_users')
-      ->condition('fuid', $fuid)
-      ->execute();   
-    watchdog('isushibsiteaccess', 'deleted user entry for %name', array('%name' => $name));   
+    isushibsiteaccess_revolk_user($name, $fuid, 'isushibsiteaccess');
   }
   drupal_set_message(t('Future user %name has been deleted.', array('%name' => $name)));
   $form_state['redirect'] = 'admin/config/people/isushibsiteaccess';

@@ -57,7 +57,9 @@ function isushib_page() {
    global $secure_base_url;
    global $user;
    global $_shibboleth_user;
-
+   
+   drupal_page_is_cacheable(FALSE);
+   
   // User is already logged into Drupal but revisited the login page.
   // Move them along; we have nothing to do.
   if ($user->uid) {
@@ -337,4 +339,12 @@ function isushib_ldap_record($netid) {
     }
   }
   return $record;
+}
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function isushib_update_projects_alter(&$projects) {
+  // Hide a site-specific module from the list.
+  unset($projects['isushib']);
 }

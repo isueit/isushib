@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Installation file for shibboleth site access sync module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function isushibsiteaccesssync_install() {
+  // Add status field to the isushibsiteaccess_users table
+  $newfield = array(
+    'description' => 'Tells whether the user came from Active Directory or not.',
+    'type' => 'varchar',
+    'length' => '60',
+    'not null' => TRUE,
+    'default' => 'notAD',
+  );
+
+  if (!db_field_exists('isushibsiteaccess_users', 'status')) {
+    db_add_field('isushibsiteaccess_users', 'status', $newfield);
+  }
+}
+
+
+/**
+ * Implements hook_schema_alter().
+ */
+function isushibsiteaccesssync_schema_alter(&$schema) {
+  $schema['isushibsiteaccess_users']['fields']['status'] = array(
+    'description' => 'Tells whether the user came from Active Directory or not.',
+    'type' => 'varchar',
+    'length' => '60',
+    'not null' => TRUE,
+    'default' => 'notAD',
+  );
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function isushibsiteaccesssync_uninstall() {
+  variable_del('isushibsiteaccesssync_ad_username');
+  variable_del('isushibsiteaccesssync_ad_password');
+  variable_del('isushibsiteaccesssync_ad_group_names');
+  variable_del('isushibsiteaccesssync_ad_ldap_server');
+  variable_del('isushibsiteaccesssync_ad_ldap_dn');
+  variable_del('isushibsiteaccesssync_last_run');
+
+  db_drop_field('isushibsiteaccess_users', 'status');
+}

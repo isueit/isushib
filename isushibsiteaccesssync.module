@@ -1,0 +1,212 @@
+<?php
+
+/**
+ * @file
+ * Syncs the access list with Active Directory group(s).
+ */
+
+
+/**
+ * Implements hook_menu().
+ */
+function isushibsiteaccesssync_menu() {
+  $items['admin/config/people/isushibsiteaccesssync'] = array(
+    'title' => 'Active Directory Sync',
+    'description' => 'Edit settings for Active Directory sync.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('isushibsiteaccesssync_settings'),
+    'access arguments' => array('administer shibboleth site access ad sync'),
+    'file' => 'isushibsiteaccesssync.admin.inc',
+  );
+
+  return $items;
+}
+
+
+/**
+ * Implements hook_cron().
+ */
+function isushibsiteaccesssync_cron() {
+  // Only run this once per day
+  if (variable_get('isushibsiteaccesssync_last_run', '20150101') < date('Ymd')) {
+    watchdog('isushibsiteaccesssync', 'Starting sync from cron.');
+    isushibsiteaccesssync_main();
+  }
+}
+
+/**
+ * Sync the lists
+ */
+function isushibsiteaccesssync_main() {
+  // Set last run variable_get
+  variable_set('isushibsiteaccesssync_last_run', date('Ymd'));
+
+  // Read some variables
+  $ad_username = variable_get('isushibsiteaccesssync_ad_username', '');
+  $ad_password = trim(decrypt(variable_get('isushibsiteaccesssync_ad_password', '')));
+  $ad_group_names = explode(',', variable_get('isushibsiteaccesssync_ad_group_names', ''));
+  $ad_ldap_server = variable_get('isushibsiteaccesssync_ad_ldap_server', 'ldaps://windc.iastate.edu:636');
+  $ad_ldap_dn = variable_get('isushibsiteaccesssync_ad_ldap_dn', 'dc=iastate,dc=edu');
+
+  // Exit if we don't have the variables that we need.
+  $ad_group_names = array_filter($ad_group_names);
+  if ($ad_username == '' || $ad_password == '' || empty($ad_group_names)) {
+    watchdog('isushibsiteaccesssync', 'Missing variables. Configure AD Sync to allow module to work.');
+    return;
+  }
+
+  // Make sure we have LDAP extensions installed
+  if (!function_exists('ldap_connect')) {
+    watchdog('isushibsiteaccesssync', 'PHP LDAP extensions not installed, exiting.');
+    return;
+  }
+
+  // Make sure we can connet to the LDAP server
+  $directory_service = ldap_connect($ad_ldap_server);
+  if (!$directory_service) {
+    watchdog('isushibsiteaccesssync', 'Could not connect to LDAP server.');
+    return;
+  }
+
+
+  // Set some LDAP options
+  ldap_set_option($directory_service, LDAP_OPT_REFERRALS, 0);
+  ldap_set_option($directory_service, LDAP_OPT_PROTOCOL_VERSION, 3);
+  if (!ldap_bind($directory_service, $ad_username, $ad_password)) {
+    watchdog('isushibsiteaccesssync', 'Unable to login to read from Active Directory');
+    return;
+  }
+
+  isushibsiteaccesssync_mark_users_to_delete();
+
+  foreach ($ad_group_names as $ad_group_name) {
+
+    // Do the actual search
+    $ad_group_name = trim($ad_group_name);
+    $search_term = '(cn=' . $ad_group_name . ')';
+    $sr = ldap_search($directory_service, $ad_ldap_dn, $search_term);
+    $info = ldap_get_entries($directory_service, $sr);
+
+    // Check that we found something
+    if ($info['count'] == 0) {
+      watchdog('isushibsiteaccesssync', 'Can not read from %name.', array('%name' => $ad_group_name));
+      continue;
+    }
+
+    // One key pair is the count, don't need to keep this
+    $group_membership = $info[0]['member'];
+    unset($group_membership['count']);
+
+    // Handle each member of the group
+    foreach ($group_membership as $key => $value) {
+      $username = str_replace('CN=', '', $value);
+      $username = substr($username, 0, stripos($username, ','));
+
+      isushibsiteaccesssync_handle_user($username);
+    }
+
+  }
+
+  isushibsiteaccesssync_revoke_users();
+
+  db_update('isushibsiteaccess_users')
+      ->fields(array('status' => 'notAD'))
+      ->condition('status', 'Delete', '=')
+      ->execute();
+
+  ldap_close($directory_service);
+
+  watchdog('isushibsiteaccesssync', 'Finished syncing users from AD group(s).');
+}
+
+/**
+ * Mark all AD users to delete.
+ */
+function isushibsiteaccesssync_mark_users_to_delete() {
+  db_update('isushibsiteaccess_users')
+    ->fields(array('status' => 'Delete'))
+    ->condition('status', 'AD', '=')
+    ->execute();
+}
+
+/**
+ * Make sure the user has access
+ */
+function isushibsiteaccesssync_handle_user($username) {
+  // Select the user's record in isushibsiteaccess_users
+  $query = db_select('isushibsiteaccess_users', 'pu')
+    ->fields('pu', array('fuid', 'name', 'status'))
+    ->condition('name', $username, '=');
+  $results = $query->execute();
+
+  // Check if the record exists in isushibsiteaccess_users
+  if ($results->rowCount() == 1) {
+    //Update the status
+    $num_updated = db_update('isushibsiteaccess_users')
+      ->fields(array('status' => 'AD'))
+      ->condition('name', $username, '=')
+      ->execute();
+  }
+  else {
+    // Add user record.
+    $record = array(
+      'name' => $username,
+      'status' => 'AD',
+    );
+    drupal_write_record('isushibsiteaccess_users', $record);
+
+    watchdog('isushibsiteaccesssync', 'Added user %name', array('%name' => $username));
+  }
+
+  // Check if the user account exists in Drupal, and if so, make sure it is not blocked
+  $u = user_load_by_name($username);
+  if ($u) {
+    if ($u->status == 0) {
+      db_update('users')
+        ->fields(array('status' => 1))
+        ->condition('name', $username, '=')
+        ->execute();
+      watchdog('isushibsiteaccesssync', 'Unblocked user %name', array('%name' => $username));
+    }
+  }
+}
+
+/**
+ * Revoke access to anyone who's status is still Delete
+ */
+function isushibsiteaccesssync_revoke_users() {
+  // Select the records where status = Delete
+  $query = db_select('isushibsiteaccess_users', 'pu')
+    ->fields('pu', array('fuid', 'name', 'status'))
+    ->condition('status', 'Delete', '=');
+  $results = $query->execute();
+
+  foreach ($results as $row) {
+    $u = user_load_by_name($row->name);
+
+    if ($u) {
+      // User exists, block the user account
+      if ($u->status != 0) {
+        $u->status = 0;
+        user_save($u);
+
+        watchdog('isushibsiteaccesssync', 'Blocked current user %name.', array('%name' => $row->name));
+      }
+    }
+    else {
+      // User doesn't exist, delete any roles from isushibsiteaccess
+      db_delete('isushibsiteaccess_roles')
+        ->condition('fuid', $row->fuid, '=')
+        ->execute();
+      watchdog('isushibsiteaccesssync', 'Deleted roles for %name.', array('%name' => $row->name));
+
+      // Delete the entry from isushibsiteaccess_users
+      db_delete('isushibsiteaccess_users')
+        ->condition('fuid', $row->fuid, '=')
+        ->execute();
+
+      watchdog('isushibsiteaccesssync', 'Deleted user entry for %name.', array('%name' => $row->name));
+    }
+  }
+}
+

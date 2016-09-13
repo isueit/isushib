@@ -1,12 +1,14 @@
-name = Shibboleth Site Access
-description = Restricts logins to a list of usernames.
+name = Shibboleth Site Access Sync
+description = Syncs the access list with Active Directory group(s).
 package = External authentication
 dependencies[] = isushib
+dependencies[] = isushibsiteaccess
+dependencies[] = encrypt
 core = 7.x
 configure = admin/config/people/isushibsiteaccess
 
 ; Information added by drupal.org packaging script on 2012-05-18
-version = "7.x-1.1"
+version = "7.x-1.0"
 core = "7.x"
 project = "isushib"
 datestamp = "1337360188"

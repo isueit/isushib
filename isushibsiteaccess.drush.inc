@@ -69,8 +69,8 @@ function drush_isushibsiteaccess_shib_addusers() {
   $assignable_roles = isushibsiteaccess_available_roles();
 
   foreach ($args as $name) {
-    // First argument is the name of the command, i.e. shib-addusers
-    if ($name == "shib-addusers") {
+    // First argument is the name of the command, i.e. shib-addusers or shib
+    if ($name == "shib-addusers" || $name == "shib") {
       continue;
     }
 

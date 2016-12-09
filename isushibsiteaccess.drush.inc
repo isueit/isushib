@@ -101,7 +101,7 @@ function drush_isushibsiteaccess_shib_addusers() {
         continue;
       }
 
-      // Check if it's an assignable rol and that the role actually exists
+      // Check if it's an assignable role and that the role actually exists
       if (in_array($role_name, $assignable_roles) && ($role = user_role_load_by_name($role_name))) {
         if ($user_exists) {
           // Assign role for current user

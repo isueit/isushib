@@ -200,7 +200,7 @@ function isushibsiteaccess_get_name($fuid) {
  * Add a future user name to the access list.
  *
  * @param string $name
- * @param string $user
+ * @param fully-loaded $user object
  * @param string $module_name
  * @return int - $fuid or 0 if alread in access list
  */

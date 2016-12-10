@@ -329,7 +329,7 @@ function isushibsiteaccess_add_name_to_list2($name, $user, $module_name) {
   if ($user && ($user->status == 0)) {
     db_update('users')
       ->fields(array('status' => 1))
-      ->condition('name', $username, '=')
+      ->condition('name', $name, '=')
       ->execute();
     isushibsiteaccess_user_feedback("Unblocked user " . $name, 'success', $module_name);
   }

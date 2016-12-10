@@ -301,12 +301,19 @@ function isushibsiteaccess_user_feedback($message, $type, $module_name) {
  * Add a future user name to the access list.
  *
  * @param string $name
- * @param fully-loaded $user object
  * @param string $module_name
- * @return int - $fuid or 0 if alread in access list
  */
-function isushibsiteaccess_add_name_to_list2($name, $user, $module_name) {
+function isushibsiteaccess_add_name_to_list2($name, $module_name) {
+  // If user_validate_name() returns anything it's a bad sign.
+  if (user_validate_name($name)) {
+    isushibsiteaccess_user_feedback($name . " is not a valid username", 'error', $module_name);
+    return;
+  }
+
+  // Does user already exist in Drupal?
+  $user = user_load_by_name($name);
   $status = $user ? t('current') : t('future');
+  //$user_exists = !empty($user);
 
   // Does the user already exist as a future user?
   $fuid = isushibsiteaccess_get_fuid($name);
@@ -334,5 +341,4 @@ function isushibsiteaccess_add_name_to_list2($name, $user, $module_name) {
     isushibsiteaccess_user_feedback("Unblocked user " . $name, 'success', $module_name);
   }
 
-  return ($record['fuid']);
 }

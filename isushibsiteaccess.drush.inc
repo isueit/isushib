@@ -74,25 +74,8 @@ function drush_isushibsiteaccess_shib_addusers() {
       continue;
     }
 
-    // If user_validate_name() returns anything it's a bad sign.
-    if (user_validate_name($name)) {
-      drush_log($name . " is not a valid username", 'error');
-      continue;
-    }
-    // Does user already exist in Drupal?
-    $u = user_load_by_name($name);
-    $status = $u ? t('current') : t('future');
-    $user_exists = !empty($u);
-
     // Give user access
-    isushibsiteaccess_add_name_to_list2($name, $u, 'drush-addusers');
-    //$fuid = isushibsiteaccess_add_name_to_list($name, $u, 'drush-addusers');
-    //if ($fuid) {
-      //drush_log("Added " . $status . " user " . $name , 'success');
-    //}
-    //else {
-      //drush_log($name . " was already on the access list", 'warning');
-    //}
+    isushibsiteaccess_add_name_to_list2($name, 'drush-addusers');
 
     // Add roles, if any were given
     foreach ($requested_roles as $role_name) {

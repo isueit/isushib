@@ -285,7 +285,7 @@ function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteac
  * @param $type
  * @param $module_name
  */
-function isushibsiteaccess_user_feedback($message, $type, $module_name = 'isushibsiteaccess') {
+function isushibsiteaccess_user_feedback($message, $type, $module_name) {
   if (function_exists('drush_log')) {
     // We're in drush
     drush_log($message, $type);
@@ -306,17 +306,23 @@ function isushibsiteaccess_user_feedback($message, $type, $module_name = 'isushi
  * @return int - $fuid or 0 if alread in access list
  */
 function isushibsiteaccess_add_name_to_list2($name, $user, $module_name) {
+  $status = $user ? t('current') : t('future');
+
   // Does the user already exist as a future user?
   $fuid = isushibsiteaccess_get_fuid($name);
   if ($fuid) {
-    return (0);
+    if ($module_name = "drush-addusers" || $module_name = "isushibsiteaccess") {
+      isushibsiteaccess_user_feedback($name . " was already on the access list", "warning", $module_name);
+    }
   }
-
-  // Add user record.
-  $record = array(
-    'name' => $name,
-  );
-  drupal_write_record('isushibsiteaccess_users', $record);
+  else {
+    // Add user record.
+    $record = array(
+      'name' => $name,
+    );
+    drupal_write_record('isushibsiteaccess_users', $record);
+    isushibsiteaccess_user_feedback("Added " . $status . " user " . $name . " to access list", "success", $module_name);
+  }
 
 
   // Unblock user if existing account is blocked

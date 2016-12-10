@@ -85,13 +85,14 @@ function drush_isushibsiteaccess_shib_addusers() {
     $user_exists = !empty($u);
 
     // Give user access
-    $fuid = isushibsiteaccess_add_name_to_list($name, $u, 'drush-addusers');
-    if ($fuid) {
-      drush_log("Added " . $status . " user " . $name , 'success');
-    }
-    else {
-      drush_log($name . " was already on the access list", 'warning');
-    }
+    isushibsiteaccess_add_name_to_list2($name, $u, 'drush-addusers');
+    //$fuid = isushibsiteaccess_add_name_to_list($name, $u, 'drush-addusers');
+    //if ($fuid) {
+      //drush_log("Added " . $status . " user " . $name , 'success');
+    //}
+    //else {
+      //drush_log($name . " was already on the access list", 'warning');
+    //}
 
     // Add roles, if any were given
     foreach ($requested_roles as $role_name) {

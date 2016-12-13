@@ -342,3 +342,13 @@ function isushibsiteaccess_add_name_to_list2($name, $module_name) {
   }
 
 }
+
+
+/*
+ * Get a list of roles to add the user to
+ * 
+ * @param string $requested_roles
+ * @param string $module_name
+ */
+function isushibsiteaccess_get_vetted_list_of_roles($requested_roles, $module_name) {
+}

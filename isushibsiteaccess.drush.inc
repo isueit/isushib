@@ -74,8 +74,10 @@ function drush_isushibsiteaccess_shib_addusers() {
       continue;
     }
 
+    $module_name = "drush-addusers";
+
     // Give user access
-    isushibsiteaccess_add_name_to_list2($name, 'drush-addusers');
+    isushibsiteaccess_add_name_to_list2($name, $module_name);
 
     // Add roles, if any were given
     foreach ($requested_roles as $role_name) {

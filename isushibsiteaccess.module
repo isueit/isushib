@@ -319,7 +319,7 @@ function isushibsiteaccess_add_name_to_list2($name, $module_name) {
   $fuid = isushibsiteaccess_get_fuid($name);
   if ($fuid) {
     if ($module_name = "drush-addusers" || $module_name = "isushibsiteaccess") {
-      isushibsiteaccess_user_feedback($name . " was already on the access list", "warning", $module_name);
+      isushibsiteaccess_user_feedback($status . " user " . $name . " was already on the access list", "warning", $module_name);
     }
   }
   else {

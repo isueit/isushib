@@ -318,7 +318,7 @@ function isushibsiteaccess_add_name_to_list2($name, $module_name) {
   // Does the user already exist as a future user?
   $fuid = isushibsiteaccess_get_fuid($name);
   if ($fuid) {
-    if ($module_name = "drush-addusers" || $module_name = "isushibsiteaccess") {
+    if ($module_name == "drush-addusers" || $module_name == "isushibsiteaccess") {
       isushibsiteaccess_user_feedback($status . " user " . $name . " was already on the access list", "warning", $module_name);
     }
   }
@@ -351,4 +351,21 @@ function isushibsiteaccess_add_name_to_list2($name, $module_name) {
  * @param string $module_name
  */
 function isushibsiteaccess_get_vetted_list_of_roles($requested_roles, $module_name) {
+  $return_array = array();
+
+  /* Check for permissions */
+  if ($module_name == "drush-addusers" || $module_name == "isushibsiteaccesssync" || user_access('administer shibboleth future roles')) {
+    $assignable_roles = isushibsiteaccess_available_roles();
+    /* Intersect of three arrays, all user roles are last so the keys should be the role ID */
+    $return_array =  array_intersect(isushibsiteaccess_fix_arrays($assignable_roles), isushibsiteaccess_fix_arrays($requested_roles), isushibsiteaccess_fix_arrays(user_roles(TRUE)));
+  }
+  return $return_array;
+}
+
+/* Trim values of array then change to lowercase
+ *
+ * @param array $array_name
+ */
+function isushibsiteaccess_fix_arrays($array_name) {
+  return (array_map('strtolower', array_map('trim', $array_name)));
 }

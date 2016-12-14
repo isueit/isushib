@@ -66,7 +66,8 @@ function isushibsiteaccess_drush_help($section) {
 function drush_isushibsiteaccess_shib_addusers() {
   $args = drush_get_arguments();
   $requested_roles = split(',', drush_get_option('roles'));
-  $assignable_roles = isushibsiteaccess_available_roles();
+  $module_name = "drush-addusers";
+  $vetted_roles = isushibsiteaccess_get_vetted_list_of_roles($requested_roles, $module_name);
 
   foreach ($args as $name) {
     // First argument is the name of the command, i.e. shib-addusers or shib
@@ -74,12 +75,11 @@ function drush_isushibsiteaccess_shib_addusers() {
       continue;
     }
 
-    $module_name = "drush-addusers";
 
     // Give user access
-    isushibsiteaccess_add_name_to_list2($name, $module_name);
+    isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name);
 
-    // Add roles, if any were given
+/*    // Add roles, if any were given
     foreach ($requested_roles as $role_name) {
       // Check for empty role name
       $role_name = trim($role_name);
@@ -102,7 +102,7 @@ function drush_isushibsiteaccess_shib_addusers() {
       else {
         drush_log($role_name . ' is not an assignable role.', 'warning');
       }
-    }
+    } */
   }
 }
 

@@ -341,7 +341,7 @@ function isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name)
         if (!(in_array($newrole, $user->roles))) {
           $role = user_role_load_by_name($newrole);
           user_multiple_role_edit(array($user->uid), 'add_role', $role->rid);
-          isushibsiteaccess_user_feedback("Role " . $newrole . " added to user " . $name, "success", $module_name);
+          isushibsiteaccess_user_feedback("Role " . $newrole . " added to current user " . $name, "success", $module_name);
         }
       }
     }
@@ -357,6 +357,13 @@ function isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name)
   }
   else {
     // Handle when it's a future user, ie no user account yet
+    $assigned_roles = isushibsiteaccess_fix_arrays(isushibsiteaccess_assigned_roles($fuid));
+    foreach ($vetted_roles as $newrole) {
+       if (!(in_array($newrole, $assigned_roles))) {
+        isushibsiteaccess_assign_role_to_future_user($fuid, array_search($newrole, $vetted_roles));
+        isushibsiteaccess_user_feedback("Role " . $newrole . " added to future user " . $name, "success", $module_name);
+      }
+    }
   }
 }
 

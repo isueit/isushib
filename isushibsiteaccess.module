@@ -270,7 +270,7 @@ function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteac
   if ($user && ($user->status != 0)) {
     db_update('users')
       ->fields(array('status' => 0))
-      ->condition('name', $username, '=')
+      ->condition('name', $name, '=')
       ->execute();
     isushibsiteaccess_user_feedback("Blocked user " . $name, 'ok', $module_name);
   }
@@ -329,18 +329,34 @@ function isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name)
     );
     drupal_write_record('isushibsiteaccess_users', $record);
     isushibsiteaccess_user_feedback("Added " . $status . " user " . $name . " to access list", "success", $module_name);
+    $fuid = isushibsiteaccess_get_fuid($name);
   }
 
+  // Check if a user account exists
+  if ($user) {
+    // Unblock user if existing account is blocked
+    if ($user->status == 0) {
+      db_update('users')
+        ->fields(array('status' => 1))
+        ->condition('name', $name, '=')
+        ->execute();
+      isushibsiteaccess_user_feedback("Unblocked user " . $name, 'success', $module_name);
+    }
 
-  // Unblock user if existing account is blocked
-  if ($user && ($user->status == 0)) {
-    db_update('users')
-      ->fields(array('status' => 1))
-      ->condition('name', $name, '=')
-      ->execute();
-    isushibsiteaccess_user_feedback("Unblocked user " . $name, 'success', $module_name);
+    // Add missing roles to existing user
+    foreach ($vetted_roles as $newrole) {
+      if ($module_name == "drush-addusers" || $module_name == "isushibsiteaccesssync" || (user_access('administer users') && user_access('administer permissions'))) {
+        if (!(in_array($newrole, $user->roles))) {
+          $role = user_role_load_by_name($newrole);
+          user_multiple_role_edit(array($user->uid), 'add_role', $role->rid);
+          isushibsiteaccess_user_feedback("Role " . $newrole . " added to user " . $name, "success", $module_name);
+        }
+      }
+    }
   }
-
+  else {
+    // Handle when it's a future user, ie no user account yet
+  }
 }
 
 

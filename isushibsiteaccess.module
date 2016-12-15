@@ -304,26 +304,26 @@ function isushibsiteaccess_user_feedback($message, $type, $module_name) {
  * @param string $module_name
  */
 function isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name) {
-  // If user_validate_name() returns anything it's a bad sign.
+  // If user_validate_name() returns anything it's a bad sign
   if (user_validate_name($name)) {
     isushibsiteaccess_user_feedback($name . " is not a valid username", 'error', $module_name);
     return;
   }
 
-  // Does user already exist in Drupal?
+  // Get some varibles we'll user later
   $user = user_load_by_name($name);
   $status = $user ? t('current') : t('future');
-  //$user_exists = !empty($user);
+  $fuid = isushibsiteaccess_get_fuid($name);
 
   // Does the user already exist as a future user?
-  $fuid = isushibsiteaccess_get_fuid($name);
   if ($fuid) {
+    // Already Exists
     if ($module_name == "drush-addusers" || $module_name == "isushibsiteaccess") {
       isushibsiteaccess_user_feedback($status . " user " . $name . " was already on the access list", "warning", $module_name);
     }
   }
   else {
-    // Add user record.
+    // Add user to the access list
     $record = array(
       'name' => $name,
     );
@@ -334,7 +334,7 @@ function isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name)
 
   // Check if a user account exists
   if ($user) {
-    // Add missing roles to existing user
+    // Add any missing roles to existing user
     foreach ($vetted_roles as $newrole) {
       if ($module_name == "drush-addusers" || $module_name == "isushibsiteaccesssync" || (user_access('administer users') && user_access('administer permissions'))) {
         // If they don't have the roll, add it
@@ -356,7 +356,7 @@ function isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name)
     }
   }
   else {
-    // Handle when it's a future user, ie no user account yet
+    // Handle roles when it's a future user, ie no user account yet
     $assigned_roles = isushibsiteaccess_fix_arrays(isushibsiteaccess_assigned_roles($fuid));
     foreach ($vetted_roles as $newrole) {
        if (!(in_array($newrole, $assigned_roles))) {

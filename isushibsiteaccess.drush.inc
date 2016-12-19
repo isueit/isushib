@@ -79,30 +79,6 @@ function drush_isushibsiteaccess_shib_addusers() {
     // Give user access
     isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name);
 
-/*    // Add roles, if any were given
-    foreach ($requested_roles as $role_name) {
-      // Check for empty role name
-      $role_name = trim($role_name);
-      if (empty($role_name)) {
-        continue;
-      }
-
-      // Check if it's an assignable role and that the role actually exists
-      if (in_array($role_name, $assignable_roles) && ($role = user_role_load_by_name($role_name))) {
-        if ($user_exists) {
-          // Assign role for current user
-          user_multiple_role_edit(array($u->uid), 'add_role', $role->rid);
-        }
-        else {
-          // Assign role for future user
-          isushibsiteaccess_assign_role_to_future_user(isushibsiteaccess_get_fuid($name), $role->rid);
-        }
-        drush_print("Added role " . $role_name . " for " . $status . " user " . $name . ".");
-      }
-      else {
-        drush_log($role_name . ' is not an assignable role.', 'warning');
-      }
-    } */
   }
 }
 

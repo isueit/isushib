@@ -301,6 +301,7 @@ function isushibsiteaccess_user_feedback($message, $type, $module_name) {
  * Add a future user name to the access list.
  *
  * @param string $name
+ * @param array $vetted_roles
  * @param string $module_name
  */
 function isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name) {

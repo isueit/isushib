@@ -102,7 +102,15 @@ function isushibsiteaccesssync_main() {
       $username = str_replace('CN=', '', $value);
       $username = substr($username, 0, stripos($username, ','));
 
-      isushibsiteaccesssync_handle_user($username);
+isushibsiteaccess_add_name_to_list2($username, array(), 'isushibsiteaccesssync');
+
+//Update the status
+$num_updated = db_update('isushibsiteaccess_users')
+  ->fields(array('status' => 'AD'))
+  ->condition('name', $username, '=')
+  ->execute();
+
+      //isushibsiteaccesssync_handle_user($username);
     }
 
   }
@@ -132,7 +140,7 @@ function isushibsiteaccesssync_mark_users_to_delete() {
 /**
  * Make sure the user has access
  */
-function isushibsiteaccesssync_handle_user($username) {
+/*function isushibsiteaccesssync_handle_user($username) {
   // Select the user's record in isushibsiteaccess_users
   $query = db_select('isushibsiteaccess_users', 'pu')
     ->fields('pu', array('fuid', 'name', 'status'))
@@ -169,7 +177,7 @@ function isushibsiteaccesssync_handle_user($username) {
       watchdog('isushibsiteaccesssync', 'Unblocked user %name', array('%name' => $username));
     }
   }
-}
+}*/
 
 /**
  * Revoke access to anyone who's status is still Delete

@@ -153,63 +153,7 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
 
   foreach ($form_state['values']['clean_users'] as $username) {
     isushibsiteaccess_add_name_to_list2($username, $requested_roles, 'isushibsiteaccess');
- /*   // Does user already exist in Drupal?
-    $u = user_load_by_name($name);
-    $status = $u ? t('current') : t('future');
-    
-    // Does the user already exist as a future user?
-    $fuid = isushibsiteaccess_add_name_to_list($name, $u, 'isushibsiteaccess');
-    if ($fuid) {
-      // User was added.
-      if ($single_user_being_added) {
-        drupal_set_message(t('Added %status user %name.', array('%status' => $status, '%name' => $name)));
-      }
-      else {
-        $count++;
-      }
-    }
-    else {
-      form_set_error('isushibsiteaccess_existing_user', t('User %name has already been added as a @status user; skipping this user.', array('%name' => $name, '@status' => $status)));
-      continue;
-    }
-    
-  
-    // Add roles chosen for user.
-    if (isset($form_state['values']['future_user_roles']) && user_access('administer shibboleth future roles')) {
-      $assignable_roles = isushibsiteaccess_available_roles();
-      foreach ($form_state['values']['future_user_roles'] as $rid => $selected) {
-        if ($selected) {
-          if ($u) {
-            // Existing user. Assign role if user has permission to do so.
-            if (user_access('administer users') && user_access('administer permissions')) {
-              user_multiple_role_edit(array($u->uid), 'add_role', $rid);
-              if ($single_user_being_added) {
-                drupal_set_message(t('Added role %role for current user %name.', array('%role' => $assignable_roles[$rid], '%name' => $name)));
-              }
-            }
-            else {
-              $cannot_assign[] = $name;
-            }
-          }
-          else {
-            // Assign role to future user.
-            isushibsiteaccess_assign_role_to_future_user($fuid, $rid);
-            if ($single_user_being_added) {
-              drupal_set_message(t('Added role %role for future user %name.', array('%role' => $assignable_roles[$rid], '%name' => $name)));
-            }
-          }
-        }       
-      }
-    }  
-*/
   }
-  /*if ($count) {
-    drupal_set_message(t('%count users were added.', array('%count' => $count)));
-  }
-  if ($cannot_assign) {
-    drupal_set_message(t('Unable to do role assignment for %names because they have already logged into the site. Contact your administrator who can modify role assignments for current users.', array('%names' => implode(', ', $cannot_assign))));
-  }
-*/
 }
 
 /**

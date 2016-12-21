@@ -77,7 +77,7 @@ function drush_isushibsiteaccess_shib_addusers() {
 
 
     // Give user access
-    isushibsiteaccess_add_name_to_list2($name, $vetted_roles, $module_name);
+    isushibsiteaccess_add_name_to_list($name, $vetted_roles, $module_name);
 
   }
 }

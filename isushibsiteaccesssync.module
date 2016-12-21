@@ -102,7 +102,7 @@ function isushibsiteaccesssync_main() {
       $username = str_replace('CN=', '', $value);
       $username = substr($username, 0, stripos($username, ','));
 
-      isushibsiteaccess_add_name_to_list2($username, array(), 'isushibsiteaccesssync');
+      isushibsiteaccess_add_name_to_list($username, array(), 'isushibsiteaccesssync');
 
       //Update the status
       $num_updated = db_update('isushibsiteaccess_users')

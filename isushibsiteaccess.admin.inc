@@ -152,7 +152,7 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
   }
 
   foreach ($form_state['values']['clean_users'] as $username) {
-    isushibsiteaccess_add_name_to_list2($username, $requested_roles, 'isushibsiteaccess');
+    isushibsiteaccess_add_name_to_list($username, $requested_roles, 'isushibsiteaccess');
   }
 }
 

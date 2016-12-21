@@ -290,9 +290,16 @@ function isushibsiteaccess_user_feedback($message, $type, $module_name) {
     // We're in drush
     drush_log($message, $type);
   }
-  else {
-    // We're in Drupal, use watchdog
+
+  if (function_exists('watchdog')) {
+    // Use watchdog
     watchdog($module_name, $message);
+  }
+
+
+  if (function_exists('drupal_set_message')) {
+    // Use drupal_set_message
+    drupal_set_message(t($message));
   }
 }
 

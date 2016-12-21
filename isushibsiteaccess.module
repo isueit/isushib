@@ -297,7 +297,7 @@ function isushibsiteaccess_user_feedback($message, $type, $module_name) {
   }
 
 
-  if (function_exists('drupal_set_message')) {
+  if (function_exists('drupal_set_message') && $module_name == 'isushibsiteaccess') {
     // Use drupal_set_message
     drupal_set_message(t($message));
   }

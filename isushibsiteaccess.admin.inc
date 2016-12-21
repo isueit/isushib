@@ -142,8 +142,17 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
   $single_user_being_added = count($form_state['values']['clean_users']) == 1;
   $count = 0;
   $cannot_assign = array();
-  foreach ($form_state['values']['clean_users'] as $name) {
-    // Does user already exist in Drupal?
+  foreach ($form_state['values']['clean_users'] as $username) {
+    $requested_roles = array();
+    $roles = user_roles();
+    foreach ($form_state['values']['future_user_roles'] as $rid => $selected) {
+      if ($selected) {
+        $requested_roles[$rid] = $roles[$rid];
+      }
+    }
+
+isushibsiteaccess_add_name_to_list2($username, $requested_roles, 'isushibsiteaccess');
+ /*   // Does user already exist in Drupal?
     $u = user_load_by_name($name);
     $status = $u ? t('current') : t('future');
     
@@ -191,13 +200,15 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
         }       
       }
     }  
+*/
   }
-  if ($count) {
+  /*if ($count) {
     drupal_set_message(t('%count users were added.', array('%count' => $count)));
   }
   if ($cannot_assign) {
     drupal_set_message(t('Unable to do role assignment for %names because they have already logged into the site. Contact your administrator who can modify role assignments for current users.', array('%names' => implode(', ', $cannot_assign))));
   }
+*/
 }
 
 /**

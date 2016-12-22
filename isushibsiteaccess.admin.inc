@@ -5,38 +5,38 @@
  * Administrative forms for shibboleth site access module.
  */
 
-/*
+/**
  * The shibboleth site access settings page.
  */
 function isushibsiteaccess_settings() {
   // Table of users who are already allowed to access the site and have accounts
-  // along with future users who do not have accounts but may have roles 
+  // along with future users who do not have accounts but may have roles
   // preassigned.
   $header = array(
-    array('data' => t('User'), 'field' => 'name', 'sort' => 'asc'), 
-    t('Account Status'), 
+    array('data' => t('User'), 'field' => 'name', 'sort' => 'asc'),
+    t('Account Status'),
     t('Roles'),
     t('Operations')
   );
   $rows = array();
-  
+
   // A join on the users table gets us all users, current and future.
   $query = db_select('isushibsiteaccess_users', 'pu');
   $query->leftjoin('users', 'u', 'pu.name = u.name');
   $query->fields('pu', array('fuid', 'name'));
-  
+
   $table_sort = $query->extend('TableSort')->orderByHeader($header);
   $pager = $table_sort->extend('PagerDefault')->limit(25);
   $result = $pager->execute();
-  
+
   // The subset of all Drupal roles that may be assigned to future users.
   $assignable_roles = variable_get('isushibsiteaccess_assignable_roles', array());
   foreach ($result as $row) {
     // If user has not yet logged in $u will be false.
     $u = user_load_by_name($row->name);
-    
+
     $assigned_roles = check_plain(implode(isushibsiteaccess_assigned_roles($row->fuid), ', '));
-        
+
     // Operations links.
     $operations = '';
     if (user_access('administer shibboleth future roles')) {
@@ -44,12 +44,12 @@ function isushibsiteaccess_settings() {
       $operations .= '&nbsp;&nbsp;';
     }
     $operations .= l(t('delete'), "admin/config/people/isushibsiteaccess/delete/$row->fuid");
-    
+
     $edit_user = '';
     if ($u && user_access('administer users') && user_access('administer permissions')) {
       $edit_user = l(t('edit'), "user/$u->uid/edit", array('query' => array('destination' => 'admin/config/people/isushibsiteaccess')));
     }
-    
+
     $rows[] = array(
       'data' => array(
         check_plain($row->name),
@@ -59,7 +59,7 @@ function isushibsiteaccess_settings() {
       ),
     );
   }
-  
+
   $form['isushibsiteaccess_list'] = array(
     '#theme' => 'table',
     '#header' => $header,
@@ -69,7 +69,7 @@ function isushibsiteaccess_settings() {
   $form['pager'] = array(
     '#theme' => 'pager',
   );
-  
+
   // Add form for new users.
   $form['future'] = array(
     '#type' => 'fieldset',
@@ -81,7 +81,7 @@ function isushibsiteaccess_settings() {
     '#title' => t('Username(s) of future user(s)'),
     '#description' => t('Enter the username of a person who has not yet created an account but when they do, should be assigned a role. You may also provide multiple usernames delimited by commas (e.g., john, michael, ryan) or on multiple lines.')
   );
-  
+
   $available_roles = isushibsiteaccess_available_roles();
   if ($available_roles && user_access('administer shibboleth future roles')) {
     $form['future']['future_user_roles'] = array(
@@ -91,7 +91,7 @@ function isushibsiteaccess_settings() {
       '#description' => t('Select which roles should be assigned at login.'),
     );
   }
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit'),
@@ -107,15 +107,18 @@ function isushibsiteaccess_settings_validate($form, &$form_state) {
   isushibsiteaccess_clean_and_validate_user_names($form, $form_state);
 }
 
+/**
+ * Make sure all the usernames are valid
+ */
 function isushibsiteaccess_clean_and_validate_user_names($form, &$form_state) {
   $users = array();
-  
+
   // Change to an array.
   $lines = explode("\n", $form_state['values']['isushibsiteaccess_usernames']);
   foreach ($lines as $line) {
-    $users = array_merge($users, explode(",", $line));   
+    $users = array_merge($users, explode(",", $line));
   }
-  
+
   // Zap whitespace.
   $trimmed_users = array_map('trim', $users);
 
@@ -136,7 +139,7 @@ function isushibsiteaccess_clean_and_validate_user_names($form, &$form_state) {
 /**
  * Process form submission.
  *
- * @see isushibsiteaccess_settings
+ * @see isushibsiteaccess_settings()
  */
 function isushibsiteaccess_settings_submit($form, &$form_state) {
   $single_user_being_added = count($form_state['values']['clean_users']) == 1;
@@ -161,7 +164,7 @@ function isushibsiteaccess_settings_submit($form, &$form_state) {
  */
 function isushibsiteaccess_form_configuration() {
   // Get list of roles, excluding anonymous user role.
-  
+
   $roles = array_map('check_plain', user_roles(TRUE));
   $checkbox_authenticated = array(
     '#type' => 'checkbox',
@@ -180,7 +183,6 @@ function isushibsiteaccess_form_configuration() {
     DRUPAL_AUTHENTICATED_RID => $checkbox_authenticated,
   );
 
-  
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit'),
@@ -189,9 +191,12 @@ function isushibsiteaccess_form_configuration() {
   return $form;
 }
 
+/**
+ * Save the configuration changes
+ */
 function isushibsiteaccess_form_configuration_submit($form, &$form_state) {
   variable_set('isushibsiteaccess_assignable_roles', $form_state['values']['roles']);
-  drupal_set_message(t('The changes have been saved.'));  
+  drupal_set_message(t('The changes have been saved.'));
 }
 
 /**
@@ -201,7 +206,7 @@ function isushibsiteaccess_edit_future_user($form, &$form_state, $fuid) {
   if (!is_numeric($fuid)) {
     return;
   }
-  
+
   $available_roles = isushibsiteaccess_available_roles();
   if (!$available_roles) {
     if (user_access('assign permissions')) {
@@ -211,25 +216,25 @@ function isushibsiteaccess_edit_future_user($form, &$form_state, $fuid) {
       form_set_error('roles', t('No roles are available to be assigned to this future user. Contact your site administrator to make roles available.'));
     }
   }
-  
+
   $name = isushibsiteaccess_get_name($fuid);
-      
+
   $form['roles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Roles for future user %name', array('%name' => $name)),
     '#options' => $available_roles,
     '#default_value' => array_keys(isushibsiteaccess_assigned_roles($fuid)),
   );
-   
+
   $form['fuid'] = array(
     '#type' => 'value',
     '#value' => $fuid,
-  );   
+  );
   $form['name'] = array(
     '#type' => 'value',
     '#value' => $name,
   );
-  
+
   $form['submit'] = array(
    '#type' => 'submit',
    '#value' => t('Submit'),
@@ -238,26 +243,32 @@ function isushibsiteaccess_edit_future_user($form, &$form_state, $fuid) {
   return $form;
 }
 
+/**
+ * Build the future users form
+ */
 function isushibsiteaccess_edit_future_user_submit($form, &$form_state) {
   $fuid = $form_state['values']['fuid'];
   $name = $form_state['values']['name'];
   db_delete('isushibsiteaccess_roles')
     ->condition('fuid', $fuid)
     ->execute();
-    
+
   foreach ($form_state['values']['roles'] as $rid => $selected) {
     if ($selected) {
-     $record = array(
-       'fuid' => $fuid,
-       'rid' => $rid,
-     );
-     drupal_write_record('isushibsiteaccess_roles', $record);
+      $record = array(
+        'fuid' => $fuid,
+        'rid' => $rid,
+      );
+      drupal_write_record('isushibsiteaccess_roles', $record);
     }
   }
   drupal_set_message(t('Role settings for future user %name have been updated.', array('%name' => $name)));
   $form_state['redirect'] = 'admin/config/people/isushibsiteaccess';
 }
 
+/**
+ * Confirm $fuid is a number
+ */
 function isushibsiteaccess_user_delete_confirm($form, &$form_state, $fuid) {
   if (!is_numeric($fuid)) {
     return;
@@ -282,6 +293,9 @@ function isushibsiteaccess_user_delete_confirm($form, &$form_state, $fuid) {
   );
 }
 
+/**
+ * Handle the user delete submit
+ */
 function isushibsiteaccess_user_delete_confirm_submit($form, &$form_state) {
   $fuid = $form_state['values']['fuid'];
   $name = $form_state['values']['name'];
@@ -315,12 +329,18 @@ function isushibsiteaccess_form_revoke() {
   return $form;
 
 }
+
+/**
+ * Validate the revoke users form
+ */
 function isushibsiteaccess_form_revoke_validate($form, &$form_state) {
   isushibsiteaccess_clean_and_validate_user_names($form, $form_state);
 }
 
-function isushibsiteaccess_form_revoke_submit($form, &$form_state)
-{
+/**
+ * Handle the revoke users submit
+ */
+function isushibsiteaccess_form_revoke_submit($form, &$form_state) {
   $count_blocks = 0;
   $count_deletes = 0;
   $error_message = '';
@@ -335,27 +355,27 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
       $error_message = $error_message . t('User %name is not on the access list', array('%name' => $name));
       continue;
     }
-    
-	$u = user_load_by_name($name);
 
-	if ($u) {
-	  // User exists
+    $u = user_load_by_name($name);
+
+    if ($u) {
+      // User exists
 
       // Block the user account
       $u->status = 0;
-	  user_save($u);
-	  
-	  drupal_set_message(t('Blocked existing user %name.', array('%name' => $name)));
-	  watchdog('isushibsiteaccess', 'Blocked current user %name.', array('%name' => $name));
-	  
-	  $count_blocks++;
+      user_save($u);
 
-	} else {
+      drupal_set_message(t('Blocked existing user %name.', array('%name' => $name)));
+      watchdog('isushibsiteaccess', 'Blocked current user %name.', array('%name' => $name));
+
+      $count_blocks++;
+    }
+    else {
       // Delete any roles from isushibsiteaccess
       db_delete('isushibsiteaccess_roles')
         ->condition('fuid', $fuid)
         ->execute();
-	  watchdog('isushibsiteaccess', 'deleted roles for %name', array('%name' => $name));
+      watchdog('isushibsiteaccess', 'deleted roles for %name', array('%name' => $name));
 
       // User doesn't exist
       db_delete('isushibsiteaccess_users')
@@ -363,9 +383,9 @@ function isushibsiteaccess_form_revoke_submit($form, &$form_state)
         ->execute();
 
       drupal_set_message(t('Deleted future user %name.', array('%name' => $name)));
-	  watchdog('isushibsiteaccess', 'Deleted user entry for %name.', array('%name' => $name));
+      watchdog('isushibsiteaccess', 'Deleted user entry for %name.', array('%name' => $name));
 
-	  $count_deletes++;
+      $count_deletes++;
     }
   }
 

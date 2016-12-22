@@ -4,11 +4,13 @@
  * @file
  * Installation file for shibboleth site access module.
  */
-
 function isushibsiteaccess_uninstall() {
   variable_del('isushibsiteaccess_assignable_roles');
 }
 
+/**
+ * Implements hook_schema().
+ */
 function isushibsiteaccess_schema() {
   $schema['isushibsiteaccess_users'] = array(
     'description' => 'Usernames and roles for future users.',
@@ -32,7 +34,7 @@ function isushibsiteaccess_schema() {
       'name' => array('name'),
     ),
   );
-  
+
   $schema['isushibsiteaccess_roles'] = array(
     'description' => 'Maps future users to roles.',
     'fields' => array(

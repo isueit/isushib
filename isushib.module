@@ -13,7 +13,7 @@ define('ISUSHIB_DEBUG_MODE', 0);
 define('ISUSHIB_VERBOSE_LOGGING', 1);
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function isushib_menu() {
   $items['login'] = array(
@@ -54,12 +54,12 @@ function isushib_login_redirect() {
  * provider, authenticated, and returned.
  */
 function isushib_page() {
-   global $secure_base_url;
-   global $user;
-   global $_shibboleth_user;
-   
-   drupal_page_is_cacheable(FALSE);
-   
+  global $secure_base_url;
+  global $user;
+  global $_shibboleth_user;
+
+  drupal_page_is_cacheable(FALSE);
+
   // User is already logged into Drupal but revisited the login page.
   // Move them along; we have nothing to do.
   if ($user->uid) {
@@ -87,9 +87,9 @@ function isushib_page() {
   }
 
   $_shibboleth_user = check_plain($_SERVER['REDIRECT_uid']);
-  
+
   watchdog('shibboleth', 'Received login request from %user', array('%user' => $_shibboleth_user));
-  
+
   if (ISUSHIB_VERBOSE_LOGGING) {
     watchdog('shibboleth', 'Session ID is %sessid', array('%sessid' => check_plain(session_id())));
   }
@@ -100,7 +100,7 @@ function isushib_page() {
       watchdog('shibboleth', '%user not in allowed usernames list', array('%user' => $_shibboleth_user));
       $account = user_load_by_name($_shibboleth_user);
       if (is_array($account) && isset($account->uid) && $account->uid == 1) {
-        watchdog('shibboleth', '%user is superuser. Allowing access.', array('%user' => $_shibboleth_user));      
+        watchdog('shibboleth', '%user is superuser. Allowing access.', array('%user' => $_shibboleth_user));
       }
       else {
         watchdog('shibboleth', '%user is not superuser. Denying access.', array('%user' => $_shibboleth_user));
@@ -170,12 +170,12 @@ function isushib_user_presave(&$edit, $account, $category) {
  */
 function isushib_entity_presave($entity, $type) {
   global $_shibboleth_user;
-  
+
   if ($type == 'user' && isset($entity->is_new) && $entity->is_new && $_shibboleth_user) {
-    
+
     // Retrieve LDAP record for this user.
     $record = isushib_ldap_record($_shibboleth_user);
-      
+
     // Add LDAP information. For example, if there is a Drupal field
     // called field_displayname and an LDAP field called displayname
     // then put the value from LDAP into $user->displayname.
@@ -195,14 +195,14 @@ function isushib_entity_presave($entity, $type) {
           )
         );
         if (ISUSHIB_VERBOSE_LOGGING) {
-          watchdog('shibboleth', 'Set %field to %value', array('%field' => $fieldname, '%value' => $ldap_record[$fieldname]));  
+          watchdog('shibboleth', 'Set %field to %value', array('%field' => $fieldname, '%value' => $ldap_record[$fieldname]));
         }
       }
     }
   }
 }
 
-/*
+/**
  * Implements hook_block_info().
  *
  * Display the shibboleth "Log in" link.
@@ -214,6 +214,9 @@ function isushib_block_info() {
   return $blocks;
 }
 
+/**
+ *
+ */
 function isushib_block_view($delta) {
   switch ($delta) {
     case 'isushib_login':
@@ -229,7 +232,7 @@ function isushib_block_view($delta) {
 }
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function isushib_theme() {
   return array(
@@ -251,7 +254,7 @@ function theme_isushib_login() {
   }
 }
 
-/*
+/**
  *  The link must be to a nonexistent file in a directory containing an .htaccess
  *  file with proper shibboleth directives. The file must not exist so it can
  *  "fall through" Apache to Drupal's menu system and be directed to the
@@ -260,7 +263,7 @@ function theme_isushib_login() {
 function isushib_login_link() {
   global $base_secure_url;
   global $base_root;
-  
+
   $options = array(
     'https' => TRUE,
     'query' => array('target' => $base_secure_url . '/' . variable_get('isushib_login_dir', 'shibboleth') . '/pc'),
@@ -268,11 +271,14 @@ function isushib_login_link() {
   $url = url($base_root . '/Shibboleth.sso/Login', $options);
 
   // url() does not respect https option unless variable_get('https', FALSE)
-  // is TRUE, so ensure that link to Shibboleth is an https link. 
+  // is TRUE, so ensure that link to Shibboleth is an https link.
   $secure_url = str_replace('http://', 'https://', $url);
   return $secure_url;
 }
 
+/**
+ *
+ */
 function isushib_ldap_record($netid) {
   // https://handbook.it.iastate.edu/ch30s02.html#Web_Publishing-Shibboleth-Attributes
   $attributes = array(

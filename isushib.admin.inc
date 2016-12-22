@@ -5,7 +5,7 @@
  * Admin page callbacks for the isushib module.
  */
 
-/*
+/**
  * The shibboleth settings page.
  */
 function isushib_settings() {

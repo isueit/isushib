@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function isushibsiteaccess_menu() {
   $items['admin/config/people/isushibsiteaccess'] = array(
@@ -83,18 +83,18 @@ function isushibsiteaccess_permission() {
 
 /**
  * Implements hook_shibboleth_post_register().
- * 
+ *
  * Called after shibboleth has created Drupal user.
  */
 function isushibsiteaccess_shibboleth_post_register($variables) {
   $name = $variables['shibboleth_user'];
   $fuid = isushibsiteaccess_get_fuid($name);
-  
+
   // Roles have now been assigned to user.
   // User is no longer a future user so future role info can be deleted.
   db_delete('isushibsiteaccess_roles')
     ->condition('fuid', $fuid)
-    ->execute();  
+    ->execute();
 }
 
 /**
@@ -117,7 +117,7 @@ function isushibsiteaccess_is_allowed($name) {
 function isushibsiteaccess_get_preassigned_roles_for_user($name) {
   $fuid = isushibsiteaccess_get_fuid($name);
   $assigned_roles = isushibsiteaccess_assigned_roles($fuid);
-  return $assigned_roles; 
+  return $assigned_roles;
 }
 
 /**
@@ -134,7 +134,7 @@ function isushibsiteaccess_assigned_roles($fuid) {
   $query->fields('pr', array('fuid', 'rid'));
   $query->condition('fuid', $fuid);
   $result = $query->execute();
-    
+
   $default_values = array();
   foreach ($result as $row) {
     $assigned_roles[$row->rid] = $available_roles[$row->rid];
@@ -168,7 +168,7 @@ function isushibsiteaccess_available_roles() {
  * Get future user ID for a username.
  *
  * @param string $name
- * @return integer 
+ * @return integer
  */
 function isushibsiteaccess_get_fuid($name) {
     $query = db_select('isushibsiteaccess_users', 'pu')
@@ -192,7 +192,7 @@ function isushibsiteaccess_get_name($fuid) {
     ->condition('fuid', $fuid);
   $result = $query->execute();
   $name = $result->fetchField(1);
-  
+
   return $name;
 }
 
@@ -330,10 +330,10 @@ function isushibsiteaccess_add_name_to_list($name, $vetted_roles, $module_name) 
     }
   }
   else {
-    // Handle roles when it's a future user, ie no user account yet
+    // Handle roles when it's a future user, that is, no user account yet
     $assigned_roles = isushibsiteaccess_fix_arrays(isushibsiteaccess_assigned_roles($fuid));
     foreach ($vetted_roles as $newrole) {
-       if (!(in_array($newrole, $assigned_roles))) {
+      if (!(in_array($newrole, $assigned_roles))) {
         isushibsiteaccess_assign_role_to_future_user($fuid, array_search($newrole, $vetted_roles));
         isushibsiteaccess_user_feedback("  Role " . $newrole . " added to future user " . $name, "success", $module_name);
       }
@@ -342,9 +342,9 @@ function isushibsiteaccess_add_name_to_list($name, $vetted_roles, $module_name) 
 }
 
 
-/*
+/**
  * Get a list of roles to add the user to
- * 
+ *
  * @param string $requested_roles
  * @param string $module_name
  */

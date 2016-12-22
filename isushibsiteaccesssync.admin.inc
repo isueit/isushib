@@ -46,6 +46,17 @@ function isushibsiteaccesssync_settings() {
     '#description' => t('Starting point in Active Directory to do the search. dc=iastate,dc=edu will search the entire directory. ou=c ext,dc=iastate,dc=edu will search just the Extension OU.'),
   );
 
+  // Get list of roles, excluding anonymous user role.
+  $roles = array_map('check_plain', isushibsiteaccess_available_roles());
+  $sync_roles = variable_get('isushibsiteaccesssync_roles', array());
+  $form['isushibsiteaccesssync']['isushibsiteaccesssync_roles'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Roles for sync\'d users'),
+    '#default_value' => $sync_roles,
+    '#options' => $roles,
+    '#description' => t('To be configurable here, roles need to be included in the assignable roles in isushibsiteaccess.'),
+  );
+
   return system_settings_form($form);
 }
 

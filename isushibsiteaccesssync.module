@@ -79,6 +79,18 @@ function isushibsiteaccesssync_main() {
 
   isushibsiteaccesssync_mark_users_to_delete();
 
+  // Get array of roles that users should be added to
+  $requested_roles = array();
+  $configured_roles = variable_get('isushibsiteaccesssync_roles', array());
+  $roles = user_roles();
+
+  foreach ($configured_roles as $key => $value) {
+    if ($configured_roles[$value]) {
+      $requested_roles[$value] = $roles[$value];
+    }
+  }
+
+
   foreach ($ad_group_names as $ad_group_name) {
 
     // Do the actual search
@@ -102,7 +114,7 @@ function isushibsiteaccesssync_main() {
       $username = str_replace('CN=', '', $value);
       $username = substr($username, 0, stripos($username, ','));
 
-      isushibsiteaccess_add_name_to_list($username, array(), 'isushibsiteaccesssync');
+      isushibsiteaccess_add_name_to_list($username, $requested_roles, 'isushibsiteaccesssync');
 
       //Update the status
       $num_updated = db_update('isushibsiteaccess_users')

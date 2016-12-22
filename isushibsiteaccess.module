@@ -216,7 +216,7 @@ function isushibsiteaccess_assign_role_to_future_user($fuid, $rid) {
  * @param int $fuid
  * @param string $module_name
  */
-function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteaccess') {
+function isushibsiteaccess_revoke_user($name, $fuid, $module_name='isushibsiteaccess') {
   // Does user already exist in Drupal?
   $user = user_load_by_name($name);
   $status = $user ? t('current') : t('future');
@@ -241,7 +241,7 @@ function isushibsiteaccess_revolk_user($name, $fuid, $module_name='isushibsiteac
     isushibsiteaccess_user_feedback("Blocked user " . $name, 'ok', $module_name);
   }
 
-  isushibsiteaccess_user_feedback("Revolked access for " . $status . " user " . $name, 'success', $module_name);
+  isushibsiteaccess_user_feedback("Revoked access for " . $status . " user " . $name, 'success', $module_name);
 }
 
 /**

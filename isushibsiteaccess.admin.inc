@@ -300,7 +300,7 @@ function isushibsiteaccess_user_delete_confirm_submit($form, &$form_state) {
   $fuid = $form_state['values']['fuid'];
   $name = $form_state['values']['name'];
   if ($form_state['values']['confirm']) {
-    isushibsiteaccess_revolk_user($name, $fuid, 'isushibsiteaccess');
+    isushibsiteaccess_revoke_user($name, $fuid, 'isushibsiteaccess');
   }
   drupal_set_message(t('Future user %name has been deleted.', array('%name' => $name)));
   $form_state['redirect'] = 'admin/config/people/isushibsiteaccess';

@@ -32,7 +32,7 @@ function isushibsiteaccess_drush_command() {
       'users' => 'List of users to remove',
     ),
     'examples' => array(
-      'drush shib-addusers user1 user2' => 'Removes access of user1 and user2',
+      'drush shib-rmusers user1 user2' => 'Removes access of user1 and user2',
     ),
   );
 

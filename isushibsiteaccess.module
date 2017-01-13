@@ -309,8 +309,8 @@ function isushibsiteaccess_add_name_to_list($name, $vetted_roles, $module_name) 
   // Check if a user account exists
   if ($user) {
     // Add any missing roles to existing user
-    foreach ($vetted_roles as $newrole) {
-      if ($module_name == "drush-addusers" || $module_name == "isushibsiteaccesssync" || (user_access('administer users') && user_access('administer permissions'))) {
+    if ($module_name == "drush-addusers" || $module_name == "isushibsiteaccesssync" || (user_access('administer users') && user_access('administer permissions'))) {
+      foreach ($vetted_roles as $newrole) {
         // If they don't have the roll, add it
         if (!(in_array($newrole, $user->roles))) {
           $role = user_role_load_by_name($newrole);

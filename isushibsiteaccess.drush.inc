@@ -94,12 +94,6 @@ function drush_isushibsiteaccess_shib_rmusers() {
       continue;
     }
 
-    $fuid = isushibsiteaccess_get_fuid($name);
-    if ($fuid) {
-      isushibsiteaccess_revoke_user($name, isushibsiteaccess_get_fuid($name), 'drush-rmusers');
-    }
-    else {
-      drush_log("User " . $name . " not on the access list", 'warning');
-    }
+    isushibsiteaccess_revoke_user($name, isushibsiteaccess_get_fuid($name), 'drush-rmusers');
   }
 }

@@ -94,6 +94,6 @@ function drush_isushibsiteaccess_shib_rmusers() {
       continue;
     }
 
-    isushibsiteaccess_revoke_user($name, isushibsiteaccess_get_fuid($name), 'drush-rmusers');
+    isushibsiteaccess_revoke_user($name, 'drush-rmusers');
   }
 }

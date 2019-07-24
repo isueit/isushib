@@ -65,7 +65,7 @@ function isushibsiteaccess_drush_help($section) {
  */
 function drush_isushibsiteaccess_shib_addusers() {
   $args = drush_get_arguments();
-  $requested_roles = split(',', drush_get_option('roles'));
+  $requested_roles = explode(',', drush_get_option('roles'));
   $module_name = "drush-addusers";
   $vetted_roles = isushibsiteaccess_get_vetted_list_of_roles($requested_roles, $module_name);
 
